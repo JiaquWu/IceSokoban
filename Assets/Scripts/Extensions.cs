@@ -22,17 +22,30 @@ public static class Extensions {
         //not sure about the distance
         switch (dir) {
             case Direction.UP:
-            return Vector3.up;
+            return new Vector3(0,0,1);
             case Direction.DOWN:
-            return Vector3.down;
+            return new Vector3(0,0,-1);
             case Direction.LEFT:
-            return Vector3.left;
+            return new Vector3(-1,0,0);
             case Direction.RIGHT:
-            return Vector3.right;
+            return new Vector3(1,0,0);
         }
         return Vector3.zero;
     }
-
+    public static Vector3 DirectionToWorldRotation(this Direction dir) {
+        switch (dir)
+        {
+            case Direction.UP:
+            return new Vector3(0,0,0);
+            case Direction.DOWN:
+            return new Vector3(0,180,0);
+            case Direction.LEFT:
+            return new Vector3(0,270,0);
+            case Direction.RIGHT:
+            return new Vector3(0,90,0);
+        }
+        return Vector3.zero;
+    }
     // public static InteractionType ReverseInteractionType(this InteractionType type) {
     //     switch(type) {
     //         case InteractionType.PICK_UP_ANIMALS:

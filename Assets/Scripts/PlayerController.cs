@@ -15,24 +15,20 @@ public class PlayerController : MonoBehaviour
     private Coroutine processMoveInputCoroutine;
     [SerializeField]
     private SpriteRenderer animalAttached;
-    [SerializeField]
-    private Sprite happyGoldenSprite;
-    [SerializeField]
-    private Sprite characterUpSprite;
-    [SerializeField]
-    private Sprite characterDownSprite;
-    [SerializeField]
-    private Sprite characterLeftSprite;
-    [SerializeField]
-    private Sprite characterRightSprite;
-    private Dictionary<Direction,Sprite> characterSpritesDic;
+
+    private Animator animator;
+    public Animator Animator {
+        get{
+            if(animator == null) {
+                animator = GetComponent<Animator>();
+                Debug.Assert(animator != null);
+            }
+            return animator;
+        }
+    }
+
     private void Awake(){
-        characterSpritesDic = new Dictionary<Direction, Sprite>() {
-                               {Direction.UP,characterUpSprite},
-                               {Direction.DOWN,characterDownSprite},
-                               {Direction.LEFT,characterLeftSprite},
-                               {Direction.RIGHT,characterRightSprite}
-        };
+
         CharacterRotateCommand(Direction.UP);
         moveInputPool=new List<Direction>();
         //if(animalAttached != null) animalAttached.enabled = false;     
@@ -72,13 +68,15 @@ public class PlayerController : MonoBehaviour
     
     
     IEnumerator ProcessMoveInput() {
+        if(!Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",true);
         OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-        yield return new WaitForSeconds(moveInputPool.Count <= 1?0.5f:0.1f);
-
+        //yield return new WaitForSeconds(moveInputPool.Count <= 1?0.5f:0.5f);
+        yield return new WaitForSeconds(0.67f);
         while (moveInputPool.Count > 0) {
             OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.67f);
         }
+        Animator.SetBool("IsWalking",false);
     }
     void OnMoveUpPerformed(InputAction.CallbackContext context) {
         //if(LevelManager.Instance.IsPlayerDead || LevelManager.Instance.IsLevelFinished) return;
@@ -157,7 +155,13 @@ public class PlayerController : MonoBehaviour
         //     Command command = new Command(()=>CharacterRotateCommand(dir),()=>CharacterRotateCommand(temp));
         //     LevelManager.Instance.commandHandler.AddCommand(command);         
         // }
-        Debug.Log(dir);  
+        //执行某一个方向的输入
+        //首先要判断和当前方向是否一样,如果不一样要先旋转一次
+        Debug.Log(dir);
+        if(dir != CharacterDirection) {
+            CharacterRotateCommand(dir);
+        }
+        CharacterMoveCommand(dir);
     }
     void OnCharacterInteractInput() { 
         // InteractionType interaction = InteractionType.NONE;
@@ -195,9 +199,9 @@ public class PlayerController : MonoBehaviour
         // }  
     }
     void CharacterRotateCommand(Direction targetDir) {
+        //执行命令
         CharacterDirection = targetDir;
-        if(!TryGetComponent<SpriteRenderer>(out SpriteRenderer renderer) || !characterSpritesDic.TryGetValue(targetDir, out Sprite sprite))  return;
-        renderer.sprite = sprite;
+        transform.rotation = Quaternion.Euler(targetDir.DirectionToWorldRotation());
     }
     void CharacterMoveCommand(Direction dir) {
         //transform.position = (dir.DirectionToVector() + transform.position).Vector3ToVector3Int();
