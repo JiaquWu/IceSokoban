@@ -76,6 +76,15 @@ public static class Extensions {
     public static Vector3Int Vector3ToVector3Int(this Vector3 vec) {
         return new Vector3Int(Mathf.RoundToInt(vec.x),Mathf.RoundToInt(vec.y),Mathf.RoundToInt(vec.z));
     }
+
+    public static string Vector3ToString(this Vector3 vector)
+    {
+        return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
+    }
+    public static string Vector3IntToString(this Vector3Int vector)
+    {
+        return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
+    }
     // public static Dictionary<TKey,TValue> MergeTwoDictionary<TKey,TValue>(this Dictionary<TKey,TValue> myDict,Dictionary<TKey,TValue> secondDict) {
     //     Dictionary<TKey,TValue> res = new Dictionary<TKey, TValue>();
     //     foreach (var item in myDict) {

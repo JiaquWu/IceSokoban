@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -78,13 +78,9 @@ public class PlayerController : MonoBehaviour
     IEnumerator ProcessMoveInput() {
         if(!Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",true);
         OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-        //yield return new WaitForSeconds(moveInputPool.Count <= 1?0.51f:0.51f);
-        //yield return new WaitForSeconds(0.51f);
         yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
         while (moveInputPool.Count > 0) {
             OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-            //yield return new WaitForSeconds(0.51f);
-            Debug.Log(Vector3.Distance(targetPosition,transform.position));
             yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
         }
         Animator.SetBool("IsWalking",false);
@@ -172,14 +168,23 @@ public class PlayerController : MonoBehaviour
             //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
             if(Animator.GetBool("IsWalking")) {
                 if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
+                    //这里要进行一系列的操作检测
+                    CharacterPushCheck();
                     CharacterMoveCommand(targetPosition);
                 }
             }      
             //然后转向
             CharacterRotateCommand(dir);
-        }//
+        }
+        //能走的情况下可以接下去执行走路
+        //所以也要一个操作检测!
+        CharacterPushCheck();
+        
+        if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
+            targetPosition = targetPosition + dir.DirectionToVector3();
+        }
         if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
-        moveCoroutine = StartCoroutine(CharacterMoveCoroutine(dir));
+        moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
     }
     void OnCharacterInteractInput() { 
         // InteractionType interaction = InteractionType.NONE;
@@ -217,27 +222,25 @@ public class PlayerController : MonoBehaviour
         // }  
     }
     void CharacterRotateCommand(Direction targetDir) {
-        //执行命令
+        //执行命令,强制改方向
         CharacterDirection = targetDir;
         transform.rotation = Quaternion.Euler(targetDir.DirectionToWorldRotation());
     }
     
     void CharacterMoveCommand(Vector3 targetPos) {
         //强行给玩家位置赋值
-
         transform.position = targetPos;
         CharacterPosition = transform.position;
     }
-    IEnumerator CharacterMoveCoroutine(Direction dir) {
-        if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
-            targetPosition = targetPosition + dir.DirectionToVector3();
-        }
-        Debug.Log(targetPosition);
-        while(Vector3.Distance(transform.position, targetPosition) > 0.001f) {
-            transform.position = Vector3.MoveTowards(transform.position,targetPosition,Time.deltaTime * moveSpeed);
+    IEnumerator CharacterMoveCoroutine(Vector3 target) {
+        while(Vector3.Distance(transform.position, target) > 0.001f) {
+            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * moveSpeed);
             yield return null;
         }
-        transform.position = targetPosition;
+        transform.position = target;
+    }
+    void CharacterPushCheck() {
+
     }
     void CharacterMoveUndo() {
 
