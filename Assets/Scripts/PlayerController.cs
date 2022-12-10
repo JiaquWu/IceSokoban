@@ -168,23 +168,41 @@ public class PlayerController : MonoBehaviour
             //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
             if(Animator.GetBool("IsWalking")) {
                 if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
-                    //这里要进行一系列的操作检测
-                    CharacterPushCheck();
                     CharacterMoveCommand(targetPosition);
                 }
             }      
             //然后转向
             CharacterRotateCommand(dir);
         }
-        //能走的情况下可以接下去执行走路
-        //所以也要一个操作检测!
-        CharacterPushCheck();
-        
+       
+        //先更新目标,再判断目标是否可行
         if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
+            //先假设一下
             targetPosition = targetPosition + dir.DirectionToVector3();
+            //能走的情况下可以接下去执行走路
+            //所以这里就是要检测targetposition
+            CharacterPushCheck();
+            SokobanObject obj = LevelManager.GetObjectOn(targetPosition);
+            if(obj != null) {
+                obj.IsPushed();
+                //那么推了之后就应该还原
+                targetPosition = transform.position;
+                //那么后面就不执行了
+                return;
+            }
+            SokobanGround ground = LevelManager.GetGroundOn(targetPosition);
+            if(ground != null && ground.IsWalkable()) {
+                if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
+                moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
+            }else {
+                //还原
+                Debug.Log("没有路可以走");
+                targetPosition = transform.position;
+            }
         }
-        if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
-        moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
+        
+
+        
     }
     void OnCharacterInteractInput() { 
         // InteractionType interaction = InteractionType.NONE;

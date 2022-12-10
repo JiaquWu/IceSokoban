@@ -79,7 +79,7 @@ public static class Extensions {
 
     public static string Vector3ToString(this Vector3 vector)
     {
-        return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
+        return string.Format("({0}, {1})", vector.x, vector.z);//y轴无所谓
     }
     public static string Vector3IntToString(this Vector3Int vector)
     {

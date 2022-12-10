@@ -10,7 +10,8 @@ public class LevelManager : SingletonManager<LevelManager> {
     Dictionary<string,SokobanGround> currentGroundsDict = new Dictionary<string, SokobanGround>();//ground是静态的,所以应该可以这么干
     public static void RegisterGround(SokobanGround ground) {
         if(!Instance.currentGroundsDict.ContainsValue(ground)) {
-            Instance.currentGroundsDict.Add(ground.transform.position.Vector3ToVector3Int().Vector3IntToString(),ground);
+            Debug.Log(ground.transform.position.Vector3ToString());
+            Instance.currentGroundsDict.Add(ground.transform.position.Vector3ToString(),ground);
         }
     }
 
@@ -24,7 +25,17 @@ public class LevelManager : SingletonManager<LevelManager> {
         if(Instance.currentGroundsDict.ContainsKey(pos.Vector3ToString())) {
             return Instance.currentGroundsDict[pos.Vector3ToString()];
         }
+        Debug.Log(pos.Vector3ToString());
         Debug.LogWarning("no ground was found");
+        return null;
+    }
+
+    public static SokobanObject GetObjectOn(Vector3 pos) {
+        for (int i = 0; i < Instance.currentLevelObjects.Count; i++) {//因为关卡中不会有多少物体,所以这么干应该没问题
+            if(Vector3.Distance(Instance.currentLevelObjects[i].transform.position,pos) < 0.01f) {
+                return Instance.currentLevelObjects[i];
+            }
+        }
         return null;
     }
 }
