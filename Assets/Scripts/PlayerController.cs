@@ -6,6 +6,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
+
+    [SerializeField]
+    private float moveSpeed;
+
     private IA_Main mainInputAction;
     public Direction CharacterDirection{get;private set;}
     public Vector3 CharacterPosition{get;private set;}
@@ -13,6 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private List<Direction> moveInputPool;
     private Coroutine processMoveInputCoroutine;
+    private Coroutine moveCoroutine;
     [SerializeField]
     private SpriteRenderer animalAttached;
 
@@ -27,9 +32,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private Vector3 targetPosition;
     private void Awake(){
 
-        CharacterRotateCommand(Direction.UP);
+        //CharacterRotateCommand(Direction.UP);
+        targetPosition = transform.position;
+        CharacterDirection = Direction.UP;//需要更换的
         moveInputPool=new List<Direction>();
         //if(animalAttached != null) animalAttached.enabled = false;     
     }
@@ -70,11 +78,14 @@ public class PlayerController : MonoBehaviour
     IEnumerator ProcessMoveInput() {
         if(!Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",true);
         OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-        //yield return new WaitForSeconds(moveInputPool.Count <= 1?0.5f:0.5f);
-        yield return new WaitForSeconds(0.67f);
+        //yield return new WaitForSeconds(moveInputPool.Count <= 1?0.51f:0.51f);
+        //yield return new WaitForSeconds(0.51f);
+        yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
         while (moveInputPool.Count > 0) {
             OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-            yield return new WaitForSeconds(0.67f);
+            //yield return new WaitForSeconds(0.51f);
+            Debug.Log(Vector3.Distance(targetPosition,transform.position));
+            yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
         }
         Animator.SetBool("IsWalking",false);
     }
@@ -157,11 +168,18 @@ public class PlayerController : MonoBehaviour
         // }
         //执行某一个方向的输入
         //首先要判断和当前方向是否一样,如果不一样要先旋转一次
-        Debug.Log(dir);
         if(dir != CharacterDirection) {
+            //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
+            if(Animator.GetBool("IsWalking")) {
+                if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
+                    CharacterMoveCommand(targetPosition);
+                }
+            }      
+            //然后转向
             CharacterRotateCommand(dir);
-        }
-        CharacterMoveCommand(dir);
+        }//
+        if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
+        moveCoroutine = StartCoroutine(CharacterMoveCoroutine(dir));
     }
     void OnCharacterInteractInput() { 
         // InteractionType interaction = InteractionType.NONE;
@@ -203,9 +221,26 @@ public class PlayerController : MonoBehaviour
         CharacterDirection = targetDir;
         transform.rotation = Quaternion.Euler(targetDir.DirectionToWorldRotation());
     }
-    void CharacterMoveCommand(Direction dir) {
-        //transform.position = (dir.DirectionToVector() + transform.position).Vector3ToVector3Int();
-        // CharacterPosition = transform.position;
+    
+    void CharacterMoveCommand(Vector3 targetPos) {
+        //强行给玩家位置赋值
+
+        transform.position = targetPos;
+        CharacterPosition = transform.position;
+    }
+    IEnumerator CharacterMoveCoroutine(Direction dir) {
+        if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
+            targetPosition = targetPosition + dir.DirectionToVector3();
+        }
+        Debug.Log(targetPosition);
+        while(Vector3.Distance(transform.position, targetPosition) > 0.001f) {
+            transform.position = Vector3.MoveTowards(transform.position,targetPosition,Time.deltaTime * moveSpeed);
+            yield return null;
+        }
+        transform.position = targetPosition;
+    }
+    void CharacterMoveUndo() {
+
     }
     // void CharacterInteractCommand(InteractionType interaction,IInteractable interactableItem) {
     //     switch (interaction) {

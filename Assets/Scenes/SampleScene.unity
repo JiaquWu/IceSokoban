@@ -462,17 +462,17 @@ PrefabInstance:
     - target: {fileID: 722232888301361054, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -40.638733
+      value: -55.106377
       objectReference: {fileID: 0}
     - target: {fileID: 722232888301361054, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 3.5129423
+      value: 0.7811576
       objectReference: {fileID: 0}
     - target: {fileID: 722232888301361054, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -1.6312892
+      value: -0.55711645
       objectReference: {fileID: 0}
     - target: {fileID: 838449410042172336, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
@@ -897,32 +897,32 @@ PrefabInstance:
     - target: {fileID: 7103478730596288527, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 40.98641
+      value: 43.26288
       objectReference: {fileID: 0}
     - target: {fileID: 7103478730596288527, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 2.5568886
+      value: 0.37567383
       objectReference: {fileID: 0}
     - target: {fileID: 7103478730596288527, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0.031009607
+      value: -1.3313324
       objectReference: {fileID: 0}
     - target: {fileID: 7149270524428197159, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -32.25911
+      value: -31.096285
       objectReference: {fileID: 0}
     - target: {fileID: 7149270524428197159, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -2.5101564
+      value: -1.7304419
       objectReference: {fileID: 0}
     - target: {fileID: 7149270524428197159, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -175.03368
+      value: -176.53432
       objectReference: {fileID: 0}
     - target: {fileID: 7180596766321783666, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
@@ -982,18 +982,17 @@ PrefabInstance:
     - target: {fileID: 7218183660093036018, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'mixamorig1:Hips'\n\tTransform 'mixamorig1:LeftHandThumb1'\n\tTransform
-        'mixamorig1:RightHand'\n\tTransform 'mixamorig1:LeftHandMiddle2'\n\tTransform
-        'mixamorig1:RightFoot'\n\tTransform 'mixamorig1:Spine1'\n\tTransform 'mixamorig1:RightLeg'\n\tTransform
-        'mixamorig1:RightHandMiddle2'\n\tTransform 'mixamorig1:Hips'\n\tTransform
-        'mixamorig1:RightArm'\n\tand more ...\n\tFrom animation clip 'Push Start_01'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7218183660093036018, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7218183660093036019, guid: efa0b9e50107e3b46a50f9c1c1367a55,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7270766440989973525, guid: efa0b9e50107e3b46a50f9c1c1367a55,
         type: 3}

@@ -18,7 +18,7 @@ public static class Extensions {
         return Direction.NONE;
     }
 
-    public static Vector3 DirectionToVector(this Direction dir) {
+    public static Vector3 DirectionToVector3(this Direction dir) {
         //not sure about the distance
         switch (dir) {
             case Direction.UP:
@@ -29,6 +29,20 @@ public static class Extensions {
             return new Vector3(-1,0,0);
             case Direction.RIGHT:
             return new Vector3(1,0,0);
+        }
+        return Vector3.zero;
+    }
+    public static Vector2 DirectionToVector2(this Direction dir) {
+        //not sure about the distance
+        switch (dir) {
+            case Direction.UP:
+            return new Vector3(0,1);
+            case Direction.DOWN:
+            return new Vector3(0,-1);
+            case Direction.LEFT:
+            return new Vector3(-1,0);
+            case Direction.RIGHT:
+            return new Vector3(1,0);
         }
         return Vector3.zero;
     }
@@ -45,6 +59,9 @@ public static class Extensions {
             return new Vector3(0,90,0);
         }
         return Vector3.zero;
+    }
+    public static bool IsPerpendicular(this Direction dir,Direction targetDir) {
+        return Vector2.Dot(dir.DirectionToVector2(),targetDir.DirectionToVector2()) == 0;
     }
     // public static InteractionType ReverseInteractionType(this InteractionType type) {
     //     switch(type) {
