@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectInfo>
+	<Project Name="IceSokoban" GUID="{971128A2-D2C1-4706-A833-9706673EE11D}" Generator="2022.1.0.8070"/>
+	<CacheRoot>../../../../../../WwiseProjects/IceSokoban/.cache</CacheRoot>
+	<Platforms>
+		<Platform Name="Windows" GUID="{6BDA4993-BE91-4B8E-B530-38660CBBBC80}" BasePlatform="Windows" BasePlatformGUID="{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}" Path="../../../../../../WwiseProjects/IceSokoban/GeneratedSoundBanks/Windows"/>
+	</Platforms>
+	<Languages>
+		<Language Name="English(US)" Id="684519430" GUID="{71801B88-F6AC-4C10-B00F-60A1BB5526DA}" Default="true" UseAsStandIn="true"/>
+	</Languages>
+	<FileHash>{74086113-885C-2A1A-D6D9-88FC3BDF07C4}</FileHash>
+</ProjectInfo>

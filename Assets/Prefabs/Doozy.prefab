@@ -1687,6 +1687,7 @@ GameObject:
   - component: {fileID: 7180596766321783666}
   - component: {fileID: 7218183660093036018}
   - component: {fileID: 7218183660093036019}
+  - component: {fileID: 2662046854593195738}
   m_Layer: 0
   m_Name: Doozy
   m_TagString: Untagged
@@ -1743,6 +1744,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 4
   animalAttached: {fileID: 0}
+--- !u!114 &2662046854593195738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7560780826856516040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b6536af42d0c3a40a4fba032500a7b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayFoostep:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 11400000, guid: 6844ed2f2bd60524c82af1086048e60e,
+      type: 2}
 --- !u!1 &7813962886900861463
 GameObject:
   m_ObjectHideFlags: 0
