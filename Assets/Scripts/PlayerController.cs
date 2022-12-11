@@ -183,7 +183,9 @@ public class PlayerController : MonoBehaviour
             //所以这里就是要检测targetposition
             CharacterPushCheck();
             SokobanObject obj = LevelManager.GetObjectOn(targetPosition);
-            if(obj != null) {
+            if(obj != null && obj.IsPushable()) {
+                //用命令模式
+                Animator.SetTrigger("Push");
                 obj.IsPushed();
                 //那么推了之后就应该还原
                 targetPosition = transform.position;
@@ -192,6 +194,7 @@ public class PlayerController : MonoBehaviour
             }
             SokobanGround ground = LevelManager.GetGroundOn(targetPosition);
             if(ground != null && ground.IsWalkable()) {
+                //命令模式
                 if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
                 moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
             }else {

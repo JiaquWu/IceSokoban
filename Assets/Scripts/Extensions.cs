@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public static class Extensions {
+    public const int UNIT_DISTANCE = 1;
     public static Direction ReverseDirection(this Direction dir) {
         switch (dir)
         {
@@ -17,18 +18,34 @@ public static class Extensions {
         }
         return Direction.NONE;
     }
-
+    public static Direction Vector3ToDirection(this Vector3 vector) {
+        vector = vector.normalized;
+        if(vector.x == 0) {
+            if(vector.z == 1) {
+                return Direction.UP;
+            }else if(vector.z == -1) {
+                return Direction.DOWN;
+            }
+        }else if(vector.z == 0) {
+            if(vector.x == -1) {
+                return Direction.LEFT;
+            }else if(vector.x == 1) {
+                return Direction.RIGHT;
+            }
+        }
+        return Direction.NONE;
+    }
     public static Vector3 DirectionToVector3(this Direction dir) {
-        //not sure about the distance
+        //not sure about the distance,distance here is actually the unit distance
         switch (dir) {
             case Direction.UP:
-            return new Vector3(0,0,1);
+            return new Vector3(0,0,UNIT_DISTANCE);
             case Direction.DOWN:
-            return new Vector3(0,0,-1);
+            return new Vector3(0,0,-UNIT_DISTANCE);
             case Direction.LEFT:
-            return new Vector3(-1,0,0);
+            return new Vector3(-UNIT_DISTANCE,0,0);
             case Direction.RIGHT:
-            return new Vector3(1,0,0);
+            return new Vector3(UNIT_DISTANCE,0,0);
         }
         return Vector3.zero;
     }
@@ -36,13 +53,13 @@ public static class Extensions {
         //not sure about the distance
         switch (dir) {
             case Direction.UP:
-            return new Vector3(0,1);
+            return new Vector3(0,UNIT_DISTANCE);
             case Direction.DOWN:
-            return new Vector3(0,-1);
+            return new Vector3(0,-UNIT_DISTANCE);
             case Direction.LEFT:
-            return new Vector3(-1,0);
+            return new Vector3(-UNIT_DISTANCE,0);
             case Direction.RIGHT:
-            return new Vector3(1,0);
+            return new Vector3(UNIT_DISTANCE,0);
         }
         return Vector3.zero;
     }
@@ -84,6 +101,16 @@ public static class Extensions {
     public static string Vector3IntToString(this Vector3Int vector)
     {
         return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
+    }
+
+    public static bool IsAttachedWithTargetIceCube(this IceCube cube, IceCube target, out Direction dir) {//dir是对于我来说,目标的方向是什么
+        if(Vector3.Distance(cube.transform.position,target.transform.position) == UNIT_DISTANCE) {
+            dir = (target.transform.position - cube.transform.position).Vector3ToDirection();
+            Debug.Log("方向是什么呢?" + dir);
+            return dir != Direction.NONE;
+        }
+        dir = Direction.NONE;
+        return false;
     }
     // public static Dictionary<TKey,TValue> MergeTwoDictionary<TKey,TValue>(this Dictionary<TKey,TValue> myDict,Dictionary<TKey,TValue> secondDict) {
     //     Dictionary<TKey,TValue> res = new Dictionary<TKey, TValue>();
