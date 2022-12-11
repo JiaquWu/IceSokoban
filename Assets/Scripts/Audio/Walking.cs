@@ -12,5 +12,6 @@ public class Walking : MonoBehaviour
     {
         Debug.Log("Play footstep sound");
         PlayFoostep.Post(gameObject);
+
     }
 }

@@ -63,6 +63,32 @@ public static class Extensions {
         }
         return Vector3.zero;
     }
+    public static List<Vector3> DirectionToGet3DirectionVectors(this Direction dir) {//比如往前,就返回前左右
+        List<Vector3> result = new List<Vector3>();
+        switch (dir) {
+            case Direction.UP:
+            result.Add(new Vector3(0,0,UNIT_DISTANCE));
+            result.Add(new Vector3(-UNIT_DISTANCE,0,0));
+            result.Add(new Vector3(UNIT_DISTANCE,0,0));
+            break;
+            case Direction.DOWN:
+            result.Add(new Vector3(0,0,-UNIT_DISTANCE));
+            result.Add(new Vector3(-UNIT_DISTANCE,0,0));
+            result.Add(new Vector3(UNIT_DISTANCE,0,0));
+            break;
+            case Direction.LEFT:
+            result.Add(new Vector3(0,0,UNIT_DISTANCE));
+            result.Add(new Vector3(0,0,-UNIT_DISTANCE));
+            result.Add(new Vector3(-UNIT_DISTANCE,0,0));
+            break;
+            case Direction.RIGHT:
+            result.Add(new Vector3(0,0,UNIT_DISTANCE));
+            result.Add(new Vector3(0,0,-UNIT_DISTANCE));
+            result.Add(new Vector3(UNIT_DISTANCE,0,0));
+            break;
+        }
+        return result;
+    }
     public static Vector3 DirectionToWorldRotation(this Direction dir) {
         switch (dir)
         {
@@ -102,7 +128,9 @@ public static class Extensions {
     {
         return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
     }
-
+    public static Vector2 Vector3ToVector2(this Vector3 vector) {
+        return new Vector2(vector.x,vector.z);
+    }
     public static bool IsAttachedWithTargetIceCube(this IceCube cube, IceCube target, out Direction dir) {//dir是对于我来说,目标的方向是什么
         if(Vector3.Distance(cube.transform.position,target.transform.position) == UNIT_DISTANCE) {
             dir = (target.transform.position - cube.transform.position).Vector3ToDirection();

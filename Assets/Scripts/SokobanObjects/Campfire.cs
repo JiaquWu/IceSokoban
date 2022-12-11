@@ -6,7 +6,7 @@ public class Campfire : SokobanObject {
     public override bool IsPushable() {
         return false;
     }
-    public override void IsPushed() {
-        
+    public override bool IsPushed(Direction dir) {
+        return false;
     }
 }

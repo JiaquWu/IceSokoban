@@ -13,7 +13,6 @@ public class LevelManager : SingletonManager<LevelManager> {
             Instance.currentGroundsDict.Add(ground.transform.position.Vector3ToString(),ground);
         }
     }
-
     public static void RegisterLevelObject(SokobanObject sokobanObject) {
         if(!Instance.currentLevelObjects.Contains(sokobanObject)) {
             Instance.currentLevelObjects.Add(sokobanObject);
@@ -46,7 +45,9 @@ public class LevelManager : SingletonManager<LevelManager> {
 
     public static SokobanObject GetObjectOn(Vector3 pos) {
         for (int i = 0; i < Instance.currentLevelObjects.Count; i++) {//因为关卡中不会有多少物体,所以这么干应该没问题
-            if(Vector3.Distance(Instance.currentLevelObjects[i].transform.position,pos) < 0.01f) {
+        //Debug.Log(Vector3.Distance(Instance.currentLevelObjects[i].transform.position,pos) +"" + Instance.currentLevelObjects[i]);
+            if(Vector3.Distance(Instance.currentLevelObjects[i].transform.position.Vector3ToVector2(),pos.Vector3ToVector2()) < 0.01f) {
+                Debug.Log("找到了" + Instance.currentLevelObjects[i]);
                 return Instance.currentLevelObjects[i];
             }
         }

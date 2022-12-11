@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private float moveSpeed;
-
+    private bool isPushing;
     private IA_Main mainInputAction;
     public Direction CharacterDirection{get;private set;}
     public Vector3 CharacterPosition{get;private set;}
@@ -18,8 +18,6 @@ public class PlayerController : MonoBehaviour
     private List<Direction> moveInputPool;
     private Coroutine processMoveInputCoroutine;
     private Coroutine moveCoroutine;
-    [SerializeField]
-    private SpriteRenderer animalAttached;
 
     private Animator animator;
     public Animator Animator {
@@ -38,7 +36,7 @@ public class PlayerController : MonoBehaviour
         //CharacterRotateCommand(Direction.UP);
         targetPosition = transform.position;
         CharacterDirection = Direction.UP;//需要更换的
-        moveInputPool=new List<Direction>();
+        moveInputPool = new List<Direction>();
         //if(animalAttached != null) animalAttached.enabled = false;     
     }
     private void OnEnable() {
@@ -76,6 +74,11 @@ public class PlayerController : MonoBehaviour
     
     
     IEnumerator ProcessMoveInput() {
+        if(Animator.GetBool("IsPushing")) {
+            Animator.SetBool("IsWalking",false);
+            yield break;
+        }
+        Debug.Log("接受输入中");
         if(!Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",true);
         OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
         yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
@@ -129,6 +132,7 @@ public class PlayerController : MonoBehaviour
                 moveInputPool.Add(Direction.RIGHT);
                 if(processMoveInputCoroutine != null) StopCoroutine(processMoveInputCoroutine);
                 processMoveInputCoroutine = StartCoroutine(ProcessMoveInput());
+                Debug.Log("持续按住");
             }
         }else {
             moveInputPool.Remove(Direction.RIGHT);
@@ -167,14 +171,20 @@ public class PlayerController : MonoBehaviour
         if(dir != CharacterDirection) {
             //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
             if(Animator.GetBool("IsWalking")) {
-                if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
-                    CharacterMoveCommand(targetPosition);
+                if(Vector3.Distance(transform.position,targetPosition) < Extensions.UNIT_DISTANCE * 0.9f) {
+                    if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
+                        CharacterMoveCommand(targetPosition);
+                    }
+                }else {
+                    //原地撞墙的情况下转向,那应该换一个targetpos
+                    targetPosition = transform.position;
                 }
+                
             }      
             //然后转向
             CharacterRotateCommand(dir);
         }
-       
+        
         //先更新目标,再判断目标是否可行
         if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
             //先假设一下
@@ -185,16 +195,21 @@ public class PlayerController : MonoBehaviour
             SokobanObject obj = LevelManager.GetObjectOn(targetPosition);
             if(obj != null && obj.IsPushable()) {
                 //用命令模式
-                Animator.SetTrigger("Push");
-                obj.IsPushed();
-                //那么推了之后就应该还原
-                targetPosition = transform.position;
-                //那么后面就不执行了
-                return;
+                Debug.Log("应该推");
+                if(obj.IsPushed(dir)) {
+                    Animator.SetBool("IsPushing",true);
+                }else {
+                    return;
+                }
+                // //那么推了之后就应该还原
+                // targetPosition = transform.position;
+                // //那么后面就不执行了,
+                // return;
             }
             SokobanGround ground = LevelManager.GetGroundOn(targetPosition);
             if(ground != null && ground.IsWalkable()) {
                 //命令模式
+                Debug.Log("执行了一次");
                 if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
                 moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
             }else {
@@ -255,10 +270,12 @@ public class PlayerController : MonoBehaviour
     }
     IEnumerator CharacterMoveCoroutine(Vector3 target) {
         while(Vector3.Distance(transform.position, target) > 0.001f) {
-            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * moveSpeed);
+            float speed = Animator.GetBool("IsPushing")? moveSpeed / 2.5f : moveSpeed;
+            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * speed);
             yield return null;
         }
         transform.position = target;
+        if(Animator.GetBool("IsPushing")) Animator.SetBool("IsPushing", false);
     }
     void CharacterPushCheck() {
 
