@@ -74,19 +74,89 @@ public class PlayerController : MonoBehaviour
     
     
     IEnumerator ProcessMoveInput() {
-        if(Animator.GetBool("IsPushing")) {
-            Animator.SetBool("IsWalking",false);
-            yield break;
-        }
-        Debug.Log("接受输入中");
-        if(!Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",true);
-        OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-        yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
-        while (moveInputPool.Count > 0) {
-            OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
+        //应该先判断是不是推,再判断走路这件事情
+        while(moveInputPool.Count > 0) {
+            //如果在推东西就不让继续输入了
+            if(Animator.GetBool("IsPushing")) yield return new WaitUntil(()=>!Animator.GetBool("IsPushing"));
+        
+            Direction dir = moveInputPool[moveInputPool.Count - 1];
+            if(dir != CharacterDirection) {
+                //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
+                if(Animator.GetBool("IsWalking")) {
+                    if(Vector3.Distance(transform.position,targetPosition) < Extensions.UNIT_DISTANCE * 0.99f) {
+                        if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
+                            CharacterMoveCommand(targetPosition);
+                        }
+                    }else {
+                        //原地撞墙的情况下转向,那应该换一个targetpos
+                        targetPosition = transform.position;
+                    }   
+                }      
+                //然后转向
+                CharacterRotateCommand(dir);
+            }
+             //先假设一下
+            targetPosition = targetPosition + dir.DirectionToVector3();
+            //
+            //所以这里就是要检测targetposition能不能推
+            SokobanObject obj = LevelManager.GetObjectOn(targetPosition);
+            if(obj != null && obj.IsPushable()) {
+                //用命令模式
+                Debug.Log("应该推");
+                if(obj.IsPushed(dir)) {
+                    Animator.SetBool("IsPushing",true);
+                    //有东西推的情况下,移动,直接取消后面的
+                    if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
+                    moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
+                    //yield return null;
+                }else {
+                    //有东西,但是不能推
+                    //所以这里应该播放一个特别的动画
+                    targetPosition = transform.position;
+                    if(Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",false);
+                    Animator.SetTrigger("CannotPush");
+                    yield break;
+                    //return;
+                }
+                
+                // //那么推了之后就应该还原
+                // targetPosition = transform.position;
+                // //那么后面就不执行了,
+                // return;
+            }else {
+                //没有东西或者是推不了,那就再判断能不能走?
+                //targetPosition = transform.position;
+                //然后再看能不能走?代码到这里说明没东西推,那就直接走路
+                //但是在走路之前要去判断
+                SokobanGround ground = LevelManager.GetGroundOn(targetPosition);
+                if(ground != null && ground.IsWalkable()) {
+                    //命令模式
+                    if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
+                    moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
+                }else {
+                    //说明没路或者不能走
+                    targetPosition = transform.position;
+                }
+                // if(Animator.GetBool("IsPushing")) {
+                //     Animator.SetBool("IsWalking",false);
+                //     yield break;
+                // }
+                if(!Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",true);
+                //执行到这里,该推开始推,该走开始走,下面的代码干嘛呢?
+                //玩家可能会按着不动,不能每一帧都检测,因此要隔一段时间检测一次
+                //隔多少时间呢?
+                //
+                //OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
+                yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
+                //while (moveInputPool.Count > 0) {
+                //    //OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
+                //    yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
+                //}
+                //到这里说明没有可以等的了,所以不走了
+                Animator.SetBool("IsWalking",false);
+            }
             yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
         }
-        Animator.SetBool("IsWalking",false);
     }
     void OnMoveUpPerformed(InputAction.CallbackContext context) {
         //if(LevelManager.Instance.IsPlayerDead || LevelManager.Instance.IsLevelFinished) return;
@@ -132,7 +202,6 @@ public class PlayerController : MonoBehaviour
                 moveInputPool.Add(Direction.RIGHT);
                 if(processMoveInputCoroutine != null) StopCoroutine(processMoveInputCoroutine);
                 processMoveInputCoroutine = StartCoroutine(ProcessMoveInput());
-                Debug.Log("持续按住");
             }
         }else {
             moveInputPool.Remove(Direction.RIGHT);
@@ -168,56 +237,12 @@ public class PlayerController : MonoBehaviour
         // }
         //执行某一个方向的输入
         //首先要判断和当前方向是否一样,如果不一样要先旋转一次
-        if(dir != CharacterDirection) {
-            //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
-            if(Animator.GetBool("IsWalking")) {
-                if(Vector3.Distance(transform.position,targetPosition) < Extensions.UNIT_DISTANCE * 0.9f) {
-                    if(dir.IsPerpendicular(CharacterDirection)) {//如果垂直才跳过去,反方向就停止然后继续走
-                        CharacterMoveCommand(targetPosition);
-                    }
-                }else {
-                    //原地撞墙的情况下转向,那应该换一个targetpos
-                    targetPosition = transform.position;
-                }
-                
-            }      
-            //然后转向
-            CharacterRotateCommand(dir);
-        }
+        
         
         //先更新目标,再判断目标是否可行
-        if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
-            //先假设一下
-            targetPosition = targetPosition + dir.DirectionToVector3();
-            //能走的情况下可以接下去执行走路
-            //所以这里就是要检测targetposition
-            CharacterPushCheck();
-            SokobanObject obj = LevelManager.GetObjectOn(targetPosition);
-            if(obj != null && obj.IsPushable()) {
-                //用命令模式
-                Debug.Log("应该推");
-                if(obj.IsPushed(dir)) {
-                    Animator.SetBool("IsPushing",true);
-                }else {
-                    return;
-                }
-                // //那么推了之后就应该还原
-                // targetPosition = transform.position;
-                // //那么后面就不执行了,
-                // return;
-            }
-            SokobanGround ground = LevelManager.GetGroundOn(targetPosition);
-            if(ground != null && ground.IsWalkable()) {
-                //命令模式
-                Debug.Log("执行了一次");
-                if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
-                moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
-            }else {
-                //还原
-                Debug.Log("没有路可以走");
-                targetPosition = transform.position;
-            }
-        }
+        //if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
+            
+        //}
         
 
         
@@ -276,6 +301,7 @@ public class PlayerController : MonoBehaviour
         }
         transform.position = target;
         if(Animator.GetBool("IsPushing")) Animator.SetBool("IsPushing", false);
+        //if(Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",false);
     }
     void CharacterPushCheck() {
 

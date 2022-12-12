@@ -9,9 +9,17 @@ public class SokobanObject : MonoBehaviour {
     public virtual bool IsPushed(Direction direction) {
         return false;
     }
-    public virtual bool MoveCheck(Direction dir, out SokobanGround ground) {
+    public virtual bool MoveCheck(Direction dir, out SokobanGround ground, out SokobanObject obj) {
         ground = LevelManager.GetGroundOn(transform.position + dir.DirectionToVector3());
-        return ground != null;
+        obj = LevelManager.GetObjectOn(transform.position + dir.DirectionToVector3());
+        if(obj != null) {
+            return obj.IsPushable();//能被推就能move
+        }else if(ground != null) {
+            return ground.IsPlaceable();
+        }else {
+            return false;
+        }
+
     }
     private void OnEnable() {
         LevelManager.RegisterLevelObject(this);

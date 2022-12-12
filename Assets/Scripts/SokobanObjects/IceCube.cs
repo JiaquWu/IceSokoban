@@ -18,12 +18,14 @@ public class IceCube : SokobanObject {
         //要检测能不能推,然后开始推之后继续检测啥的
         List<IceCube> cubes = GetAllAttachedIceCubes();
         for (int i = 0; i < cubes.Count; i++) {
-            if(!cubes[i].MoveCheck(dir,out SokobanGround ground)) {
-                Debug.Log("这里有问题吗");
+            if(!cubes[i].MoveCheck(dir,out SokobanGround ground,out SokobanObject obj)) {
                 return false;
             }
         }
         for (int i = 0; i < cubes.Count; i++) {
+            if(cubes[i].MoveCheck(dir,out SokobanGround ground,out SokobanObject obj)) {
+                
+            }
             cubes[i].StartNewMovement(dir);
         }
         
@@ -45,6 +47,8 @@ public class IceCube : SokobanObject {
         transform.position = target;
         //检测一下周围的iceCube,让它们加入
         CheckNeighborAttachedIceCubes(dir);
+        //
+
         // List<IceCube> cubes = GetAllAttachedIceCubes();
         // for (int i = 0; i < cubes.Count; i++) {
         //     if(cubes[i].MoveCheck(dir,out SokobanGround ground)) {
@@ -128,5 +132,22 @@ public class IceCube : SokobanObject {
         }
         //Debug.Log("那就连起来拉 " + dir + cube);
 
+    }
+    public void DisconnectCubeWithDirection(Direction dir,IceCube cube) {
+        switch (dir)
+        {
+            case Direction.UP:
+            UpAttachedIceCube = null;
+            break;
+            case Direction.DOWN:
+            DownAttachedIceCube = null;
+            break;
+            case Direction.LEFT:
+            LeftAttachedIceCube = null;
+            break;
+            case Direction.RIGHT:
+            RightAttachedIceCube = null;
+            break;
+        }
     }
 }

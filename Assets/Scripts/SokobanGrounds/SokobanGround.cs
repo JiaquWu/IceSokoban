@@ -9,7 +9,9 @@ public class SokobanGround : MonoBehaviour {
     public virtual bool IsWalkable() {
         return false;
     }
-
+    public virtual bool IsPlaceable() {
+        return true;
+    }
     private void OnEnable() {
         LevelManager.RegisterGround(this);
     }
