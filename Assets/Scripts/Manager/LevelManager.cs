@@ -35,10 +35,10 @@ public class LevelManager : SingletonManager<LevelManager> {
     }
 
     public static SokobanGround GetGroundOn(Vector3 pos) {
-        if(Instance.currentGroundsDict.ContainsKey(pos.Vector3ToString())) {
-            return Instance.currentGroundsDict[pos.Vector3ToString()];
+        if(Instance.currentGroundsDict.ContainsKey(pos.Vector3ToVector3Int().Vector3IntToString())) {
+            return Instance.currentGroundsDict[pos.Vector3ToVector3Int().Vector3IntToString()];
         }
-        Debug.Log(pos.Vector3ToString());
+        Debug.Log(pos.Vector3ToVector3Int().Vector3IntToString());
         Debug.LogWarning("no ground was found");
         return null;
     }
@@ -47,7 +47,6 @@ public class LevelManager : SingletonManager<LevelManager> {
         for (int i = 0; i < Instance.currentLevelObjects.Count; i++) {//因为关卡中不会有多少物体,所以这么干应该没问题
         //Debug.Log(Vector3.Distance(Instance.currentLevelObjects[i].transform.position,pos) +"" + Instance.currentLevelObjects[i]);
             if(Vector3.Distance(Instance.currentLevelObjects[i].transform.position.Vector3ToVector2(),pos.Vector3ToVector2()) < 0.01f) {
-                Debug.Log("找到了" + Instance.currentLevelObjects[i]);
                 return Instance.currentLevelObjects[i];
             }
         }
