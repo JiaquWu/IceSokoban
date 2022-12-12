@@ -126,7 +126,7 @@ public static class Extensions {
     }
     public static string Vector3IntToString(this Vector3Int vector)
     {
-        return string.Format("({0}, {1})", vector.x, vector.z);
+        return string.Format("({0}, {1}, {2})", vector.x, vector.y, vector.z);
     }
     public static Vector2 Vector3ToVector2(this Vector3 vector) {
         return new Vector2(vector.x,vector.z);

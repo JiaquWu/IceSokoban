@@ -38,6 +38,8 @@ public class IceCube : SokobanObject {
     IEnumerator IceCubeMove(Direction dir) {
         bool canContinue = true;
         Vector3 target = transform.position + dir.DirectionToVector3();
+        
+        Debug.Log("该移动了" + target);
         while(Vector3.Distance(transform.position, target) > 0.001f) {
             transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * 2);
             yield return null;
@@ -64,6 +66,7 @@ public class IceCube : SokobanObject {
     public List<IceCube> GetAllAttachedIceCubes() {
         List<IceCube> result = new List<IceCube>();
         RecursiveAddIceCubes(this,ref result);
+        Debug.Log(result.Count + "有这么多个");
         return result;
     }
     public void RecursiveAddIceCubes(IceCube cube,ref List<IceCube> result) {
