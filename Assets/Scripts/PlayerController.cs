@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
         while(moveInputPool.Count > 0) {
             //如果在推东西就不让继续输入了
             if(Animator.GetBool("IsPushing")) yield return new WaitUntil(()=>!Animator.GetBool("IsPushing"));
-        
+            if(moveInputPool.Count <= 0) yield break; 
             Direction dir = moveInputPool[moveInputPool.Count - 1];
             if(dir != CharacterDirection) {
                 //如果是旋转,并且当前在走路的情况下,那么就先要让当前迅速到目标点,
@@ -111,21 +111,30 @@ public class PlayerController : MonoBehaviour
             
             //所以这里就是要检测targetposition能不能推
             SokobanObject obj = LevelManager.GetObjectOn(targetPosition);
-            if(obj != null && obj.IsPushable()) {
-                //用命令模式
-                //如果没有到跟前,就瞬移一下
-                if(Vector3.Distance(transform.position,targetPosition) > Extensions.UNIT_DISTANCE * 1f) {
-                    CharacterMoveCommand(targetPosition - dir.DirectionToVector3());
-                    CharacterRotateCommand(dir);
-                }
-                Debug.Log("应该推");
-                if(obj.IsPushed(dir)) {
-                    Animator.SetBool("IsPushing",true);
-                    Animator.SetBool("IsWalking",false);
-                    //有东西推的情况下,移动,直接取消后面的
-                    if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
-                    moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
-                    //yield return null;
+            if(obj != null) {
+                if(obj.IsPushable()) {
+                    //用命令模式
+                    //如果没有到跟前,就瞬移一下
+                    if(Vector3.Distance(transform.position,targetPosition) > Extensions.UNIT_DISTANCE * 1f) {
+                        CharacterMoveCommand(targetPosition - dir.DirectionToVector3());
+                        CharacterRotateCommand(dir);
+                    }
+                    if(obj.IsPushed(dir)) {
+                        Animator.SetBool("IsPushing",true);
+                        Animator.SetBool("IsWalking",false);
+                        //有东西推的情况下,移动,直接取消后面的
+                        if(moveCoroutine != null) StopCoroutine(moveCoroutine);//只要有新的,就应该停止旧的,因为target更新了
+                        moveCoroutine = StartCoroutine(CharacterMoveCoroutine(targetPosition));
+                        //yield return null;
+                    }else {
+                        //有东西,但是不能推
+                        //所以这里应该播放一个特别的动画
+                        targetPosition -= dir.DirectionToVector3();
+                        if(Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",false);
+                        Animator.SetTrigger("CannotPush");
+                        yield break;
+                        //return;
+                    }
                 }else {
                     //有东西,但是不能推
                     //所以这里应该播放一个特别的动画
@@ -133,15 +142,16 @@ public class PlayerController : MonoBehaviour
                     if(Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",false);
                     Animator.SetTrigger("CannotPush");
                     yield break;
-                    //return;
+
                 }
+                
                 
                 // //那么推了之后就应该还原
                 // targetPosition = transform.position;
                 // //那么后面就不执行了,
                 // return;
             }else {
-                //没有东西或者是推不了,那就再判断能不能走?
+                //没有东西,那就再判断能不能走?
                 //targetPosition = transform.position;
                 //然后再看能不能走?代码到这里说明没东西推,那就直接走路
                 //但是在走路之前要去判断
@@ -167,8 +177,7 @@ public class PlayerController : MonoBehaviour
                 //隔多少时间呢?
                 //
                 //OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
-                yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);
-                Debug.Log("那么现在的距离是" + Vector3.Distance(targetPosition,transform.position) + "目标是" + targetPosition); 
+                yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f); 
                 //while (moveInputPool.Count > 0) {
                 //    //OnCharacterMoveInput(moveInputPool[moveInputPool.Count - 1]);
                 //    yield return new WaitUntil(()=>Vector3.Distance(targetPosition,transform.position) < 0.01f);

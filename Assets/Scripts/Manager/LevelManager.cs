@@ -12,6 +12,9 @@ public class LevelManager : SingletonManager<LevelManager> {
         if(!Instance.currentGroundsDict.ContainsValue(ground)) {
             Instance.currentGroundsDict.Add(ground.transform.position.Vector3ToString(),ground);
         }
+        if(ground is InvisibleGround) {
+            ground.gameObject.SetActive(false);
+        }
     }
     public static void RegisterLevelObject(SokobanObject sokobanObject) {
         if(!Instance.currentLevelObjects.Contains(sokobanObject)) {
@@ -28,12 +31,25 @@ public class LevelManager : SingletonManager<LevelManager> {
                     }
                 }
 
-
-                Instance.currentLevelIceCubes.Add(sokobanObject as IceCube);
+                if(!Instance.currentLevelIceCubes.Contains(sokobanObject as IceCube)) {
+                    Instance.currentLevelIceCubes.Add(sokobanObject as IceCube);
+                }
+                
             }
         }
     }
 
+    public static void UnRegisterLevelObject(SokobanObject sokobanObject) {
+        if(Instance.currentLevelObjects.Contains(sokobanObject)) {
+            Instance.currentLevelObjects.Remove(sokobanObject);
+
+            if(sokobanObject is IceCube) {
+                if(Instance.currentLevelIceCubes.Contains(sokobanObject as IceCube)) {
+                    Instance.currentLevelIceCubes.Remove(sokobanObject as IceCube);
+                }
+            }
+        }
+    }
     public static SokobanGround GetGroundOn(Vector3 pos) {
         if(Instance.currentGroundsDict.ContainsKey(pos.Vector3ToVector3Int().Vector3IntToString())) {
             return Instance.currentGroundsDict[pos.Vector3ToVector3Int().Vector3IntToString()];
