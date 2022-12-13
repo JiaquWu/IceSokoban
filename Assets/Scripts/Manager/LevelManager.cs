@@ -34,6 +34,10 @@ public class LevelManager : SingletonManager<LevelManager> {
     public static void RegisterLevelObject(SokobanObject sokobanObject) {
         if(!Instance.currentLevelObjects.Contains(sokobanObject)) {
             Instance.currentLevelObjects.Add(sokobanObject);
+            SokobanGround ground = GetGroundOn(sokobanObject.transform.position);
+            if(ground != null) {
+                ground.OnObjectEnter(sokobanObject);
+            }
             //如果是冰块,
             if(sokobanObject is IceCube) {
                 //那么就检测一遍其他的冰块
@@ -78,7 +82,6 @@ public class LevelManager : SingletonManager<LevelManager> {
         for (int i = 0; i < Instance.currentLevelObjects.Count; i++) {//因为关卡中不会有多少物体,所以这么干应该没问题
         //Debug.Log(Vector3.Distance(Instance.currentLevelObjects[i].transform.position,pos) +"" + Instance.currentLevelObjects[i]);
             if(Vector3.Distance(Instance.currentLevelObjects[i].transform.position.Vector3ToVector2(),pos.Vector3ToVector2()) < 0.01f) {
-                Debug.Log("找到了" + Instance.currentLevelObjects[i]);
                 return Instance.currentLevelObjects[i];
             }
         }

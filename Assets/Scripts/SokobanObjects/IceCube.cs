@@ -35,14 +35,14 @@ public class IceCube : SokobanObject {
                 IsPushed(dir);
                 onFinishedMove = null;
             }else {
-                Debug.Log("停下来了");
-                //判断是否到终点了
-                for (int i = 0; i < cubes.Count; i++) {
-                    SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
-                    if(ground != null) {
-                        ground.OnObjectEnter(cubes[i]);
-                    }
-                }
+                // Debug.Log("停下来了");
+                // //判断是否到终点了
+                // for (int i = 0; i < cubes.Count; i++) {
+                //     SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
+                //     if(ground != null) {
+                //         ground.OnObjectEnter(cubes[i]);
+                //     }
+                // }
             }
         };
         for (int i = 0; i < cubes.Count; i++) {
@@ -54,6 +54,7 @@ public class IceCube : SokobanObject {
                 }
                 //如果obj是燃烧着的火焰,那么这块冰要单独拿出来让它融化掉
                 if(obj is Campfire && (obj as Campfire).IsFiring) {
+                    Debug.Log(obj);
                     cubes[i].isFired = true;
                     (obj as Campfire).BurnOut();
                 }
@@ -63,6 +64,7 @@ public class IceCube : SokobanObject {
                     //如果当前方块不是冰或者外面,或者下一格不是冰块或者外面,都不能继续
                     shouldCheckAgain = false;
                 }
+                Debug.Log("currentGround " + currentGround + "ground" + ground);
             }
             //说明能推,所以开始行动
             
@@ -124,6 +126,8 @@ public class IceCube : SokobanObject {
                 
             }
         }
+        ground = LevelManager.GetGroundOn(transform.position);
+        if(ground != null) ground.OnObjectEnter(this);
         yield return null;
         //要知道所有的方块都到了这里,我才能说invoke
         onFinishMove?.Invoke();

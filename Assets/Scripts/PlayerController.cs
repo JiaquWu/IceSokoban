@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
 
@@ -33,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetPosition;
     private void Awake(){
 
-        //CharacterRotateCommand(Direction.UP);
+        CharacterRotateCommand(Direction.UP);
         targetPosition = transform.position;
         CharacterDirection = Direction.UP;//需要更换的
         moveInputPool = new List<Direction>();
@@ -248,6 +249,9 @@ public class PlayerController : MonoBehaviour
     }
     void OnRestartPerformed(InputAction.CallbackContext context) {
         Debug.Log("restart game");
+        //重启当前关卡
+        GameObject light = FindObjectOfType<Light>().gameObject;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     void OnCharacterMoveInput(Direction dir) {
         // if(dir == CharacterDirection) {
