@@ -26,16 +26,25 @@ public class IceCube : SokobanObject {
         bool isStillHereAfterMovement = false;
         bool shouldCheckAgain = true;
         isAttachedWithOtherIceCubes = false;
-        onFinishedMove = ()=> {
-            if(shouldCheckAgain && !isAttachedWithOtherIceCubes) {
-                Debug.Log("问题出在这里吗???");
-                IsPushed(dir);
-                onFinishedMove = null;
-            }
-        };
+        
         
         if(cubes.Any(x=>!x.MoveCheck(dir,out SokobanGround ground,out SokobanObject obj))) return false;
         //说明每一个冰块前面都能放
+        onFinishedMove = ()=> {
+            if(shouldCheckAgain && !isAttachedWithOtherIceCubes) {
+                IsPushed(dir);
+                onFinishedMove = null;
+            }else {
+                Debug.Log("停下来了");
+                //判断是否到终点了
+                for (int i = 0; i < cubes.Count; i++) {
+                    SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
+                    if(ground != null) {
+                        ground.OnObjectEnter(cubes[i]);
+                    }
+                }
+            }
+        };
         for (int i = 0; i < cubes.Count; i++) {
             if(cubes[i].MoveCheck(dir,out SokobanGround ground,out SokobanObject obj)) {
                 //如果ground是在外面的,要判断ground的数量
@@ -63,7 +72,6 @@ public class IceCube : SokobanObject {
             if(!cubes[i].gameObject.activeSelf) return false;
             IceCube cube = cubes[i];
             cube.StartNewMovement(dir,isStillHereAfterMovement,cube.isFired,cube.onFinishedMove,()=>{
-                Debug.Log("为什么不可以呢?" + cube);
                 this.isAttachedWithOtherIceCubes = true;
             });
         }
@@ -76,6 +84,9 @@ public class IceCube : SokobanObject {
     public override bool MoveCheck(Direction dir, out SokobanGround ground, out SokobanObject obj) {
         ground = LevelManager.GetGroundOn(transform.position + dir.DirectionToVector3());
         obj = LevelManager.GetObjectOn(transform.position + dir.DirectionToVector3());
+        if(LevelManager.Player.transform.position.Vector3ToVector2() == (transform.position + dir.DirectionToVector3()).Vector3ToVector2()) {
+            return false;
+        }
         if(obj != null) {
             return obj.CanBePushedByIceCube();//能被推就能move
         }else if(ground != null) {
@@ -90,13 +101,12 @@ public class IceCube : SokobanObject {
     }
     IEnumerator IceCubeMove(Direction dir,bool isStillHereAfterMovement,bool isFired,Action onFinishMove,Action onNewCubeAttached) {
         Vector3 target = transform.position + dir.DirectionToVector3();
-        
-        Debug.Log("该移动了" + target);
+        SokobanGround ground = LevelManager.GetGroundOn(transform.position);
+        if(ground != null) ground.OnObjectLeave(this);
         while(Vector3.Distance(transform.position, target) > 0.001f) {
             transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * 2);
             yield return null;
         }
-        Debug.Log("我执行完了啊啊啊");
         transform.position = target;
         //先判断会不会掉下去 //再判断会不会融化
         if(!isStillHereAfterMovement || isFired) {
@@ -111,7 +121,7 @@ public class IceCube : SokobanObject {
             if(CheckNeighborAttachedIceCubes(dir)) {
                 onNewCubeAttached?.Invoke();
             }else {
-                Debug.Log("没有检测到??????????????????????");
+                
             }
         }
         yield return null;
@@ -121,7 +131,6 @@ public class IceCube : SokobanObject {
     public List<IceCube> GetAllAttachedIceCubes() {
         List<IceCube> result = new List<IceCube>();
         RecursiveAddIceCubes(this,ref result);
-        Debug.Log(result.Count + "有这么多个");
         return result;
     }
     public void RecursiveAddIceCubes(IceCube cube,ref List<IceCube> result) {
@@ -154,6 +163,7 @@ public class IceCube : SokobanObject {
     }
     public bool CheckNeighborAttachedIceCubes(Direction dir) {
         List<Vector3> targets = dir.DirectionToGet3DirectionVectors();
+        bool result = false;
         for (int i = 0; i < targets.Count; i++) {
             SokobanObject obj = LevelManager.GetObjectOn(transform.position + targets[i]);
             if(obj is IceCube) {
@@ -161,8 +171,7 @@ public class IceCube : SokobanObject {
                 Debug.Log(targets[i]);
                 if(SetIceCubeWithDirection(targets[i].Vector3ToDirection(),obj as IceCube) 
                 && (obj as IceCube).SetIceCubeWithDirection(targets[i].Vector3ToDirection().ReverseDirection(),this)) {
-                    Debug.Log("这里先触发???");
-                    return true;
+                    result = true;
                 }
             }
         }
@@ -177,8 +186,7 @@ public class IceCube : SokobanObject {
         //         }
         //     }
         // }
-        Debug.Log("这里会触发?");
-        return false;
+        return result;
     }
     public bool SetIceCubeWithDirection(Direction dir,IceCube cube) {
         switch (dir)

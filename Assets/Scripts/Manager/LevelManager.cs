@@ -4,9 +4,21 @@ using UnityEngine;
 
 public class LevelManager : SingletonManager<LevelManager> {
     //List<SokobanGround> currentLevelGrounds = new List<SokobanGround>();
-
+    private static PlayerController player;
+    public static PlayerController Player {
+        get {
+            if(player == null) {
+                player = FindObjectOfType<PlayerController>();
+                if(player == null) {
+                    Debug.LogError("no player in the scene");
+                }
+            }
+            return player;
+        }    
+    }
     List<SokobanObject> currentLevelObjects = new List<SokobanObject>();
     List<IceCube> currentLevelIceCubes = new List<IceCube>();
+    List<SokobanGround> currentLevelGoals = new List<SokobanGround>();
     Dictionary<string,SokobanGround> currentGroundsDict = new Dictionary<string, SokobanGround>();//ground是静态的,所以应该可以这么干
     public static void RegisterGround(SokobanGround ground) {
         if(!Instance.currentGroundsDict.ContainsValue(ground)) {
@@ -14,6 +26,9 @@ public class LevelManager : SingletonManager<LevelManager> {
         }
         if(ground is InvisibleGround) {
             ground.gameObject.SetActive(false);
+        }
+        if(ground.IsLevelGoal) {
+            Instance.currentLevelGoals.Add(ground);
         }
     }
     public static void RegisterLevelObject(SokobanObject sokobanObject) {
@@ -68,5 +83,15 @@ public class LevelManager : SingletonManager<LevelManager> {
             }
         }
         return null;
+    }
+
+    public static void OnGoalReached(SokobanGround ground) {
+        for (int i = 0; i < Instance.currentLevelGoals.Count; i++) {
+            if(!Instance.currentLevelGoals[i].IsReached) {
+                return;
+            }
+        }
+        //说明全都到达了
+        Debug.Log("通关咯!!!!!!");
     }
 }
