@@ -10,7 +10,7 @@ public class Walking : MonoBehaviour
 
     public void PlayFootstep()
     {
-        Debug.Log("Play footstep sound");
+        //Debug.Log("Play footstep sound");
         PlayFoostep.Post(gameObject);
 
     }
