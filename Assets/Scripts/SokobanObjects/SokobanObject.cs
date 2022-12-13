@@ -24,7 +24,7 @@ public class SokobanObject : MonoBehaviour {
         }
 
     }
-    private void OnEnable() {
+    public virtual void OnEnable() {
         LevelManager.RegisterLevelObject(this);
     }
 }

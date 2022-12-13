@@ -17,7 +17,13 @@ public class Campfire : SokobanObject {
     public override bool IsPushed(Direction dir) {
         return false;
     }
-
+    public override void OnEnable() {
+        base.OnEnable();
+        if(!IsFiring) {
+            ParticleSystem particle = GetComponentInChildren<ParticleSystem>();
+            particle.gameObject.SetActive(false);
+        }
+    }
     public void BurnOut() {
         isFiring = false;
         //关闭火焰特效 如果有的话
