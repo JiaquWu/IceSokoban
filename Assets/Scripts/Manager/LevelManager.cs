@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LevelManager : SingletonManager<LevelManager> {
     //List<SokobanGround> currentLevelGrounds = new List<SokobanGround>();
+    public CommandHandler commandHandler{get;private set;}
     private static PlayerController player;
     public static PlayerController Player {
         get {
@@ -20,6 +21,9 @@ public class LevelManager : SingletonManager<LevelManager> {
     List<IceCube> currentLevelIceCubes = new List<IceCube>();
     List<SokobanGround> currentLevelGoals = new List<SokobanGround>();
     Dictionary<string,SokobanGround> currentGroundsDict = new Dictionary<string, SokobanGround>();//ground是静态的,所以应该可以这么干
+    protected override void Init() {
+        commandHandler = new CommandHandler();
+    }
     public static void RegisterGround(SokobanGround ground) {
         if(!Instance.currentGroundsDict.ContainsValue(ground)) {
             Instance.currentGroundsDict.Add(ground.transform.position.Vector3ToString(),ground);

@@ -16,7 +16,7 @@ public class SokobanGround : MonoBehaviour {
             if(particle == null) {
                 particle = GetComponentInChildren<ParticleSystem>();
                 if(particle == null) {
-                    Debug.LogError("no particle here");
+                    Debug.LogError("no particle here or it's disabled");
                 }
             }
             return particle;

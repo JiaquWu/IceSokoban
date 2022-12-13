@@ -356,9 +356,9 @@ public class PlayerController : MonoBehaviour
     //     }
     // }
     void CharacterUndoCommand() {
-    //    if(!LevelManager.Instance.commandHandler.Undo()) {
+       if(!LevelManager.Instance.commandHandler.Undo()) {
            
-    //    }
+       }
         Debug.Log("undo stuff");
     }
     void OnLevelFinish() {
