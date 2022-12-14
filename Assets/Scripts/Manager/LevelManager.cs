@@ -100,5 +100,6 @@ public class LevelManager : SingletonManager<LevelManager> {
         }
         //说明全都到达了
         Debug.Log("通关咯!!!!!!");
+        GameEventsManager.TriggerEvent(GameEventTypeInt.FINISH_LEVEL,GameManager.Instance.GetCurrentLevelIndex());
     }
 }

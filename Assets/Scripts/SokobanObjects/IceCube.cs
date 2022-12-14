@@ -106,7 +106,7 @@ public class IceCube : SokobanObject {
         SokobanGround ground = LevelManager.GetGroundOn(transform.position);
         if(ground != null) ground.OnObjectLeave(this);
         while(Vector3.Distance(transform.position, target) > 0.001f) {
-            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * 3);
+            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * 5);
             yield return null;
         }
         transform.position = target;

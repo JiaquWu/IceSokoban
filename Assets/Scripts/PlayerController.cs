@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
         mainInputAction.Gameplay.Restart.performed += OnRestartPerformed;
         // LevelManager.OnPlayerDead += OnPlayerDead;
         // LevelManager.OnlevelFinish += OnLevelFinish;
+        GameEventsManager.StartListening(GameEventTypeInt.FINISH_LEVEL,OnLevelFinish);
     }
     private void OnDisable() {
         
@@ -71,6 +72,7 @@ public class PlayerController : MonoBehaviour
         mainInputAction.Disable();
         // LevelManager.OnPlayerDead -= OnPlayerDead;
         // LevelManager.OnlevelFinish -= OnLevelFinish;
+        GameEventsManager.StopListening(GameEventTypeInt.FINISH_LEVEL,OnLevelFinish);
     }
     
     
@@ -361,8 +363,9 @@ public class PlayerController : MonoBehaviour
        }
         Debug.Log("undo stuff");
     }
-    void OnLevelFinish() {
-        //animalAttached.sprite = happyGoldenSprite;
+    void OnLevelFinish(GameEventTypeInt eventTypeInt,int levelIndex) {
+        Animator.SetTrigger("FinishLevel");
+        mainInputAction.Disable();
     }
     void OnPlayerDead() {
         //moveInputPool.Clear();

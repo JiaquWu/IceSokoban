@@ -11,13 +11,13 @@ public enum GameEventTypeVoid {
     
 }
 public enum GameEventTypeInt {
-    
+    FINISH_LEVEL
 }
 public enum GameEventTypeFloat {
 
 }
 public enum GameEventTypeString {
-
+    
 }
 public class GameEventsManager : SingletonManager<GameEventsManager> {
     public class VoidUnityEvent : UnityEvent<GameEventTypeVoid> {
