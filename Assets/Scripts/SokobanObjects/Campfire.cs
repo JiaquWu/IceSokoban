@@ -33,7 +33,6 @@ public class Campfire : SokobanObject {
         ParticleSystem particle = GetComponentInChildren<ParticleSystem>();
         ParticleSystem.EmissionModule emission = particle.emission;
         float startTime = Time.time;
-        Debug.Log(emission);
         while(Time.time - startTime < fireDisableAnimCurve.keys[fireDisableAnimCurve.keys.Length - 1].time) {
             if(particle != null) {
                 emission.rateOverTime = fireDisableAnimCurve.Evaluate(Time.time - startTime) * 90;

@@ -7,13 +7,13 @@ using UnityEngine;
 public class IceCube : SokobanObject {
     bool isFired;
     bool shouldCheckAgain = true;
-    private bool isAttachedWithOtherIceCubes = false;
+    private bool shouldStop = false;
     private IceCube UpAttachedIceCube;
     private IceCube DownAttachedIceCube;
     private IceCube LeftAttachedIceCube;
     private IceCube RightAttachedIceCube;
     public Coroutine moveCoroutine;
-    public Action onFinishedMove;
+    public Action<bool> onFinishedMove;
     public override bool IsPushable()
     {
         return true;
@@ -25,24 +25,26 @@ public class IceCube : SokobanObject {
         int walkableGroundCount = 0;
         bool isStillHereAfterMovement = false;
         bool shouldCheckAgain = true;
-        isAttachedWithOtherIceCubes = false;
+        shouldStop = false;
         
         
         if(cubes.Any(x=>!x.MoveCheck(dir,out SokobanGround ground,out SokobanObject obj))) return false;
         //说明每一个冰块前面都能放
-        onFinishedMove = ()=> {
-            if(shouldCheckAgain && !isAttachedWithOtherIceCubes) {
+        onFinishedMove = (b)=> {
+            if(shouldCheckAgain && !shouldStop) {
                 IsPushed(dir);
                 onFinishedMove = null;
             }else {
-                // Debug.Log("停下来了");
-                // //判断是否到终点了
-                // for (int i = 0; i < cubes.Count; i++) {
-                //     SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
-                //     if(ground != null) {
-                //         ground.OnObjectEnter(cubes[i]);
-                //     }
-                // }
+                //判断是否到终点了
+                for (int i = 0; i < cubes.Count; i++) {
+                    SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
+                    if(ground != null) {
+                        ground.OnObjectEnter(cubes[i]);
+                    }
+                }
+                if(b) {
+                    gameObject.SetActive(false);
+                }
             }
         };
         for (int i = 0; i < cubes.Count; i++) {
@@ -64,17 +66,25 @@ public class IceCube : SokobanObject {
                     //如果当前方块不是冰或者外面,或者下一格不是冰块或者外面,都不能继续
                     shouldCheckAgain = false;
                 }
-                Debug.Log("currentGround " + currentGround + "ground" + ground);
             }
             //说明能推,所以开始行动
             
         }
+        // for (int i = 0; i < cubes.Count; i++) {
+        //     if(cubes[i].gameObject.activeSelf) {
+        //         SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
+        //         if(ground != null) {
+        //             Debug.Log("能到这里吗" + ground.gameObject.transform.position);
+        //             ground.OnObjectEnter(cubes[i]);//要先判定
+        //         }
+        //     }
+        // }
         
         for (int i = 0; i < cubes.Count; i++) {
-            if(!cubes[i].gameObject.activeSelf) return false;
+            if(!cubes[i].gameObject.activeSelf) return false; 
             IceCube cube = cubes[i];
             cube.StartNewMovement(dir,isStillHereAfterMovement,cube.isFired,cube.onFinishedMove,()=>{
-                this.isAttachedWithOtherIceCubes = true;
+                this.shouldStop = true;
             });
         }
         
@@ -97,11 +107,11 @@ public class IceCube : SokobanObject {
             return false;
         }
     }
-    public void StartNewMovement(Direction dir,bool isStillHereAfterMovement,bool isFired,Action onFinishMove,Action onNewCubeAttached) {
+    public void StartNewMovement(Direction dir,bool isStillHereAfterMovement,bool isFired,Action<bool> onFinishMove,Action onStop) {
         if(moveCoroutine != null) StopCoroutine(moveCoroutine);
-        moveCoroutine = StartCoroutine(IceCubeMove(dir,isStillHereAfterMovement,isFired,onFinishMove,onNewCubeAttached));;
+        moveCoroutine = StartCoroutine(IceCubeMove(dir,isStillHereAfterMovement,isFired,onFinishMove,onStop));;
     }
-    IEnumerator IceCubeMove(Direction dir,bool isStillHereAfterMovement,bool isFired,Action onFinishMove,Action onNewCubeAttached) {
+    IEnumerator IceCubeMove(Direction dir,bool isStillHereAfterMovement,bool isFired,Action<bool> onFinishMove,Action onStop) {
         Vector3 target = transform.position + dir.DirectionToVector3();
         SokobanGround ground = LevelManager.GetGroundOn(transform.position);
         if(ground != null) ground.OnObjectLeave(this);
@@ -110,28 +120,38 @@ public class IceCube : SokobanObject {
             yield return null;
         }
         transform.position = target;
+        bool shouldDisableMyself = false;
         //先判断会不会掉下去 //再判断会不会融化
         if(!isStillHereAfterMovement || isFired) {
             //先这样
-            gameObject.SetActive(false);
+            Debug.Log("救命");
+            onStop?.Invoke();
             DisconnectMySurroundingCubes();
             LevelManager.UnRegisterLevelObject(this);
+            
+            if(onFinishMove != null) {//说明哥们是被推的,待会销毁
+                shouldDisableMyself = true;
+            }else {//说明是别的方块,需要马上销毁!
+                gameObject.SetActive(false);
+            }
         }       
         //检测一下周围的iceCube,让它们加入,前提是我还没消失呢
-        
-        if(gameObject.activeSelf) {
+        yield return null;
+        if(gameObject.activeSelf && !(onFinishMove != null && shouldDisableMyself)) {//现在没有被销毁,并且待会也不会被销毁
+        Debug.Log("onFinishMove != null" + (onFinishMove == null) + "shouldDisableMyself" + shouldDisableMyself);
             if(CheckNeighborAttachedIceCubes(dir)) {
-                onNewCubeAttached?.Invoke();
+                
+                onStop?.Invoke();
             }else {
                 
             }
         }
         yield return null;
-        ground = LevelManager.GetGroundOn(transform.position);
-        if(ground != null) ground.OnObjectEnter(this);
+        // ground = LevelManager.GetGroundOn(transform.position);
+        // if(ground != null) ground.OnObjectEnter(this);
         
         //要知道所有的方块都到了这里,我才能说invoke
-        onFinishMove?.Invoke();
+        onFinishMove?.Invoke(shouldDisableMyself);
     }
     public List<IceCube> GetAllAttachedIceCubes() {
         List<IceCube> result = new List<IceCube>();
@@ -167,13 +187,13 @@ public class IceCube : SokobanObject {
         return cubes;
     }
     public bool CheckNeighborAttachedIceCubes(Direction dir) {
+        
         List<Vector3> targets = dir.DirectionToGet3DirectionVectors();
         bool result = false;
         for (int i = 0; i < targets.Count; i++) {
             SokobanObject obj = LevelManager.GetObjectOn(transform.position + targets[i]);
-            if(obj is IceCube) {
+            if(obj is IceCube && obj.gameObject.activeSelf) {
                 //
-                Debug.Log(targets[i]);
                 if(SetIceCubeWithDirection(targets[i].Vector3ToDirection(),obj as IceCube) 
                 && (obj as IceCube).SetIceCubeWithDirection(targets[i].Vector3ToDirection().ReverseDirection(),this)) {
                     result = true;
@@ -229,6 +249,7 @@ public class IceCube : SokobanObject {
 
     }
     public void DisconnectMySurroundingCubes() {
+        
         if(UpAttachedIceCube != null) {
             UpAttachedIceCube.DisconnectCubeWithDirection(Direction.DOWN);
             UpAttachedIceCube = null;
@@ -245,6 +266,8 @@ public class IceCube : SokobanObject {
             RightAttachedIceCube.DisconnectCubeWithDirection(Direction.LEFT);
             RightAttachedIceCube = null;
         }
+        Debug.Log("UpAttachedIceCube " + UpAttachedIceCube + "DownAttachedIceCube " + DownAttachedIceCube 
+        +"LeftAttachedIceCube " + LeftAttachedIceCube + "RightAttachedIceCube " + RightAttachedIceCube);
     }
     public void DisconnectCubeWithDirection(Direction dir) {
         switch (dir)

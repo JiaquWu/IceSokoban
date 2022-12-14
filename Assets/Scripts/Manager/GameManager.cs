@@ -53,7 +53,6 @@ public class GameManager : SingletonManager<GameManager> {
     public void LoadNextOrPrevLevel(bool isPrevLevel) {
         
         int currentLevelIndex = GetCurrentLevelIndex();
-        Debug.Log("??????????????" + SceneManager.GetActiveScene().name);
         if(currentLevelIndex != -1) {
             int targetLevelIndex = isPrevLevel? currentLevelIndex-1 : currentLevelIndex+1;
                 SceneManager.LoadScene(levelSequence.levels[targetLevelIndex].FileName);

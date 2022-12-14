@@ -134,7 +134,6 @@ public static class Extensions {
     public static bool IsAttachedWithTargetIceCube(this IceCube cube, IceCube target, out Direction dir) {//dir是对于我来说,目标的方向是什么
         if(Vector3.Distance(cube.transform.position,target.transform.position) == UNIT_DISTANCE) {
             dir = (target.transform.position - cube.transform.position).Vector3ToDirection();
-            Debug.Log("方向是什么呢?" + dir);
             return dir != Direction.NONE;
         }
         dir = Direction.NONE;
