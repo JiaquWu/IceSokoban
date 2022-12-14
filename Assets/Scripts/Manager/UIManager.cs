@@ -17,6 +17,8 @@ public class UIManager : SingletonManager<UIManager> {
     [SerializeField]
     private GameObject selectLevelRightButton;
     [SerializeField]
+    private Image fadeInOutImage;
+    [SerializeField]
     private GameObject levelImage_01;
     [SerializeField]
     private GameObject levelImage_02;
@@ -135,5 +137,11 @@ public class UIManager : SingletonManager<UIManager> {
                levelButtonList[i].SetActive(false);
            }
        }
+    }
+    public void SetFadeInAndOutPanelAlpha(float value) {
+        if(fadeInOutImage.TryGetComponent<Image>(out Image image)) {
+            Color color = image.color;
+            image.color = new Color(color.r,color.g,color.b,value);
+        }
     }
 }

@@ -26,8 +26,15 @@ public class GameManager : SingletonManager<GameManager> {
             Debug.LogError("no such levelSequence");
         }
         DontDestroyOnLoad(gameObject);
+        //这里播放一个入场渐变
+        
     }
-  
+    private void OnEnable() {
+        SceneManager.sceneLoaded += (scene,loadSceneMode)=> {
+            StartCoroutine(FadeInAnOut(true,0.5f,null));
+        };
+        StartCoroutine(FadeInAnOut(true,0.5f,null));
+    }
     public int GetCurrentLevelIndex() {
         string currentLevel = SceneManager.GetActiveScene().name;
         for (int i = 0; i < levelSequence.levels.Count; i++) {
@@ -47,7 +54,9 @@ public class GameManager : SingletonManager<GameManager> {
     }
     public void LoadLevel(string fileName) {
         for (int i = 0; i < levelSequence.levels.Count; i++) {
-            if(levelSequence.levels[i].FileName == fileName) SceneManager.LoadScene(fileName);
+            if(levelSequence.levels[i].FileName == fileName)  {
+                StartCoroutine(FadeInAnOut(false,0.5f,()=>SceneManager.LoadScene(fileName)));
+            }
         }
     }
     public void LoadNextOrPrevLevel(bool isPrevLevel) {
@@ -55,11 +64,25 @@ public class GameManager : SingletonManager<GameManager> {
         int currentLevelIndex = GetCurrentLevelIndex();
         if(currentLevelIndex != -1) {
             int targetLevelIndex = isPrevLevel? currentLevelIndex-1 : currentLevelIndex+1;
-                SceneManager.LoadScene(levelSequence.levels[targetLevelIndex].FileName);
+                StartCoroutine(FadeInAnOut(false,0.5f,()=>SceneManager.LoadScene(levelSequence.levels[targetLevelIndex].FileName)));
         }
     }
     public void LoadCurrentLevel() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        StartCoroutine(FadeInAnOut(false,0.5f,()=>SceneManager.LoadScene(SceneManager.GetActiveScene().name)));
+    }
+    public void LoadSceneWithFade(string sceneName) {
+        StartCoroutine(FadeInAnOut(false,0.5f,()=>SceneManager.LoadScene(sceneName)));
+    }
+    IEnumerator FadeInAnOut(bool isFadeIn,float duration,Action loadSceneAction) {
+        float startTime = Time.time;
+        while(Time.time - startTime < duration) {
+            //
+            float value = isFadeIn?  duration - (Time.time - startTime):Time.time - startTime ;
+            
+            UIManager.Instance.SetFadeInAndOutPanelAlpha(value/duration);
+            yield return null;
+        }
+        loadSceneAction?.Invoke();
     }
     public bool isFirstLevel() {
         string currentLevel = SceneManager.GetActiveScene().name;
