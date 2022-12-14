@@ -365,6 +365,7 @@ public class PlayerController : MonoBehaviour
     }
     void OnLevelFinish(GameEventTypeInt eventTypeInt,int levelIndex) {
         Animator.SetTrigger("FinishLevel");
+        StopAllCoroutines();
         mainInputAction.Disable();
     }
     void OnPlayerDead() {

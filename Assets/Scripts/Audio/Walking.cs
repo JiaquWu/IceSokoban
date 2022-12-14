@@ -6,12 +6,12 @@ public class Walking : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    public AK.Wwise.Event PlayFoostep;    
+    // public AK.Wwise.Event PlayFoostep;    
 
-    public void PlayFootstep()
-    {
-        //Debug.Log("Play footstep sound");
-        PlayFoostep.Post(gameObject);
+    // public void PlayFootstep()
+    // {
+    //     //Debug.Log("Play footstep sound");
+    //     PlayFoostep.Post(gameObject);
 
-    }
+    // }
 }
