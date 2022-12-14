@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class IceCube : SokobanObject {
     bool isFired;
-    bool shouldCheckAgain = true;
     private bool shouldStop = false;
     private IceCube UpAttachedIceCube;
     private IceCube DownAttachedIceCube;
@@ -28,7 +27,17 @@ public class IceCube : SokobanObject {
         shouldStop = false;
         
         
-        if(cubes.Any(x=>!x.MoveCheck(dir,out SokobanGround ground,out SokobanObject obj))) return false;
+        if(cubes.Any(x=>!x.MoveCheck(dir,out SokobanGround ground,out SokobanObject obj))) {//就是发现往前走不了的时候,检测脚底下
+            shouldCheckAgain = false;
+            for (int i = 0; i < cubes.Count; i++) {
+                SokobanGround ground = LevelManager.GetGroundOn(cubes[i].transform.position);
+                if(ground != null) {
+                    ground.OnObjectEnter(cubes[i]);
+                }
+            }
+            return false;
+        }
+        
         //说明每一个冰块前面都能放
         onFinishedMove = (b)=> {
             if(shouldCheckAgain && !shouldStop) {

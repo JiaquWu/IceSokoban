@@ -9,7 +9,7 @@ public class Campfire : SokobanObject {
     private bool isFiring;
     public bool IsFiring => isFiring;
     public override bool CanBePushedByIceCube() {
-        return isFiring;
+        return IsFiring;
     }
     public override bool IsPushable() {
         return false;
