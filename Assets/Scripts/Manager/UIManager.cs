@@ -11,6 +11,8 @@ public class UIManager : SingletonManager<UIManager> {
     [SerializeField]
     private GameObject rightLevelButton;
     [SerializeField]
+    private GameObject restartLevelButton;
+    [SerializeField]
     private GameObject selectLevelMenuPanel;
     [SerializeField]
     private GameObject selectLevelLeftButton;
@@ -48,10 +50,21 @@ public class UIManager : SingletonManager<UIManager> {
     }
     private void Start() {
         if(leftLevelButton != null) {
-            leftLevelButton.SetActive(!GameManager.Instance.isFirstLevel());
+            if(GameManager.Instance.GetCurrentLevelIndex() == -1) {
+                leftLevelButton.SetActive(false);
+            }else {
+                leftLevelButton.SetActive(!GameManager.Instance.isFirstLevel());
+            }
         }
         if(rightLevelButton != null) {
-            rightLevelButton.SetActive(!GameManager.Instance.isLastLevel());
+            if(GameManager.Instance.GetCurrentLevelIndex() == -1) {
+                rightLevelButton.SetActive(false);
+            }else {
+                rightLevelButton.SetActive(!GameManager.Instance.isLastLevel());
+            }
+        }
+        if(restartLevelButton != null) {
+            restartLevelButton.SetActive(GameManager.Instance.GetCurrentLevelIndex() != -1);
         }
         if(selectLevelMenuPanel != null) {
             selectLevelMenuPanel.SetActive(false);
@@ -81,19 +94,19 @@ public class UIManager : SingletonManager<UIManager> {
 
     }
     public void OnStartFirstLevelButtonClicked() {
-        //AudioManager.Instance.PlayUIClickAudio();
+        AudioManager.Instance.PlayUIClickAudio();
         GameManager.Instance.LoadLevel(0);
     }
     public void OnLeftLevelButtonClicked() {
-        //AudioManager.Instance.PlayUIClickAudio();
+        AudioManager.Instance.PlayUIClickAudio();
         GameManager.Instance.LoadNextOrPrevLevel(true);
     }
     public void OnRightLevelButtonClicked() {
-        //AudioManager.Instance.PlayUIClickAudio();
+        AudioManager.Instance.PlayUIClickAudio();
         GameManager.Instance.LoadNextOrPrevLevel(false);
     }
     public void OnRestartLevelButtonClicked() {
-        //AudioManager.Instance.PlayUIClickAudio();
+        AudioManager.Instance.PlayUIClickAudio();
         GameManager.Instance.LoadCurrentLevel();
     }
     public void OnEscButtonPerformed(InputAction.CallbackContext context) {

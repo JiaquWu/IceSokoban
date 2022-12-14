@@ -35,6 +35,7 @@ public class IceCube : SokobanObject {
                     ground.OnObjectEnter(cubes[i]);
                 }
             }
+            AudioManager.Instance.StopIcePushAudio();
             return false;
         }
         
@@ -54,6 +55,7 @@ public class IceCube : SokobanObject {
                 if(b) {
                     gameObject.SetActive(false);
                 }
+                AudioManager.Instance.StopIcePushAudio();
             }
         };
         for (int i = 0; i < cubes.Count; i++) {

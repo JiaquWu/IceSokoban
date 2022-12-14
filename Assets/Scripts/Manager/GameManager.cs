@@ -32,8 +32,14 @@ public class GameManager : SingletonManager<GameManager> {
     private void OnEnable() {
         SceneManager.sceneLoaded += (scene,loadSceneMode)=> {
             StartCoroutine(FadeInAnOut(true,0.5f,null));
+            if(GetCurrentLevelIndex() != -1) {
+                AudioManager.Instance.PlaySeaWaveAudio();
+            }
         };
         StartCoroutine(FadeInAnOut(true,0.5f,null));
+        if(GetCurrentLevelIndex() != -1) {
+            AudioManager.Instance.PlaySeaWaveAudio();
+        }
     }
     public int GetCurrentLevelIndex() {
         string currentLevel = SceneManager.GetActiveScene().name;

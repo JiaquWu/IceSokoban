@@ -2578,6 +2578,7 @@ MonoBehaviour:
   drownAnimObject: {fileID: 0}
   leftLevelButton: {fileID: 6248437035660115078}
   rightLevelButton: {fileID: 6248437036310703887}
+  restartLevelButton: {fileID: 1339019816130002429}
   selectLevelMenuPanel: {fileID: 0}
   selectLevelLeftButton: {fileID: 0}
   selectLevelRightButton: {fileID: 0}
