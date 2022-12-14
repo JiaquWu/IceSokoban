@@ -106,7 +106,7 @@ public class IceCube : SokobanObject {
         SokobanGround ground = LevelManager.GetGroundOn(transform.position);
         if(ground != null) ground.OnObjectLeave(this);
         while(Vector3.Distance(transform.position, target) > 0.001f) {
-            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * 2);
+            transform.position = Vector3.MoveTowards(transform.position,target,Time.deltaTime * 3);
             yield return null;
         }
         transform.position = target;
@@ -126,9 +126,10 @@ public class IceCube : SokobanObject {
                 
             }
         }
+        yield return null;
         ground = LevelManager.GetGroundOn(transform.position);
         if(ground != null) ground.OnObjectEnter(this);
-        yield return null;
+        
         //要知道所有的方块都到了这里,我才能说invoke
         onFinishMove?.Invoke();
     }

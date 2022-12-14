@@ -40,8 +40,9 @@ public class SokobanGround : MonoBehaviour {
         if(IsLevelGoal) {
             IsReached = true;
             Particle.gameObject.SetActive(false);
+            LevelManager.OnGoalReached(this);
         }
-        LevelManager.OnGoalReached(this);
+        
     }
     public void OnObjectLeave(SokobanObject obj) {
         if(IsLevelGoal) {
