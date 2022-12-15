@@ -123,6 +123,7 @@ public class PlayerController : MonoBehaviour
                         CharacterRotateCommand(dir);
                     }
                     if(obj.IsPushed(dir)) {
+                        AudioManager.Instance.PlayicePushAudio();
                         Animator.SetBool("IsPushing",true);
                         Animator.SetBool("IsWalking",false);
                         //有东西推的情况下,移动,直接取消后面的
@@ -255,68 +256,9 @@ public class PlayerController : MonoBehaviour
         GameObject light = FindObjectOfType<Light>().gameObject;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-    void OnCharacterMoveInput(Direction dir) {
-        // if(dir == CharacterDirection) {
-        //     if(!IsPassable(dir)) return;
-        //     List<IPassable> objects = LevelManager.GetInterfaceOn<IPassable>(Utilities.DirectionToVector(dir) + transform.position);
-        //     Command command = new Command();
-        //     command.executeAction += ()=>CharacterMoveCommand(dir);
-        //     command.undoAction += ()=>CharacterMoveCommand(Utilities.ReverseDirection(dir));
-        //     foreach (var item in objects) {
-        //        item.OnPlayerEnter(gameObject,ref command);
-        //     }
-        //     LevelManager.Instance.commandHandler.AddCommand(command); 
-        // }else {
-        //     Direction temp = CharacterDirection;
-        //     Command command = new Command(()=>CharacterRotateCommand(dir),()=>CharacterRotateCommand(temp));
-        //     LevelManager.Instance.commandHandler.AddCommand(command);         
-        // }
-        //执行某一个方向的输入
-        //首先要判断和当前方向是否一样,如果不一样要先旋转一次
-        
-        
-        //先更新目标,再判断目标是否可行
-        //if(Vector3.Distance(targetPosition + dir.DirectionToVector3(),transform.position) <= 1) {
-            
-        //}
-        
-
-        
+    void OnCharacterMoveInput(Direction dir) { 
     }
     void OnCharacterInteractInput() { 
-        // InteractionType interaction = InteractionType.NONE;
-        // Command command = new Command();
-        // if(InteractableCharacterHold != null) {
-        //     if(IsPlaceable(out IPlaceable placeable)) {  
-        //         IInteractable temp = InteractableCharacterHold;
-        //         interaction = InteractionType.PUT_DOWN_ANIMALS;
-        //         command.executeAction += ()=>CharacterInteractCommand(interaction,temp);
-        //         command.undoAction += ()=>CharacterInteractCommand(Utilities.ReverseInteractionType(interaction),temp);
-        //         InteractableCharacterHold.OnPlayerInteract(interaction,placeable,gameObject,ref command);
-        //         List<IPlaceable> placeables = LevelManager.GetInterfaceOn<IPlaceable>((Utilities.DirectionToVector(CharacterDirection)) + transform.position);
-        //         foreach (var item in placeables) {
-        //             item.OnPlayerPlace(temp,ref command);
-        //         }
-        //         LevelManager.Instance.commandHandler.AddCommand(command);     
-        //     }
-        // }else {
-        //     if(!IsInteractable()) return;
-        //     interaction = InteractionType.PICK_UP_ANIMALS;
-        //     List<IPlaceable> placeables = LevelManager.GetInterfaceOn<IPlaceable>((Utilities.DirectionToVector(CharacterDirection)) + transform.position);
-        //     IPlaceable temp = placeables[0];
-        //     List<IInteractable> objects = LevelManager.GetInterfaceOn<IInteractable>((Utilities.DirectionToVector(CharacterDirection)) + transform.position);
-        //     foreach (var item in objects) {
-        //         item.OnPlayerInteract(interaction,temp,gameObject,ref command);             
-        //     }
-        //     command.executeAction += ()=>CharacterInteractCommand(interaction,objects[0]);
-        //     command.undoAction += ()=>CharacterInteractCommand(Utilities.ReverseInteractionType(interaction),objects[0]);
-        //     List<Ground> grounds = LevelManager.GetInterfaceOn<Ground>(transform.position);
-        //     foreach (var item in grounds) {
-        //        command.executeAction += ()=>item.OnBreakingGround(true);
-        //        command.undoAction += ()=>item.OnBreakingGround(false);
-        //     }
-        //     LevelManager.Instance.commandHandler.AddCommand(command);
-        // }  
     }
     void CharacterRotateCommand(Direction targetDir) {
         //执行命令,强制改方向
@@ -339,24 +281,9 @@ public class PlayerController : MonoBehaviour
         if(Animator.GetBool("IsPushing")) Animator.SetBool("IsPushing", false);
         //if(Animator.GetBool("IsWalking")) Animator.SetBool("IsWalking",false);
     }
-    void CharacterPushCheck() {
-
-    }
     void CharacterMoveUndo() {
 
     }
-    // void CharacterInteractCommand(InteractionType interaction,IInteractable interactableItem) {
-    //     switch (interaction) {
-    //         case InteractionType.PICK_UP_ANIMALS:
-    //         InteractableCharacterHold = interactableItem;
-    //         animalAttached.enabled = true;
-    //         break;
-    //         case InteractionType.PUT_DOWN_ANIMALS:
-    //         InteractableCharacterHold = null;
-    //         animalAttached.enabled = false;
-    //         break;
-    //     }
-    // }
     void CharacterUndoCommand() {
        if(!LevelManager.Instance.commandHandler.Undo()) {
            
@@ -367,49 +294,13 @@ public class PlayerController : MonoBehaviour
         Animator.SetTrigger("FinishLevel");
         StopAllCoroutines();
         mainInputAction.Disable();
+        AudioManager.Instance.PlayplayerFinishLevelAudio();
     }
     void OnPlayerDead() {
         //moveInputPool.Clear();
     }
-    // bool IsPassable(Direction dir) {
-    //     List<GameObject> objects = LevelManager.GetObjectsOn(Utilities.DirectionToVector(dir) + transform.position);
-    //     if(objects.Count == 0) return false;
-    //     foreach (var item in objects) {
-    //        if(!item.TryGetComponent<IPassable>(out IPassable passable)) return false;
-    //        if(!passable.IsPassable(dir)) return false;
-    //     }
-    //     return true;
-    // }
-    // bool IsPlaceable(out IPlaceable placeable) {
-    //     IPlaceable temp = null;
-    //     List<GameObject> objects = LevelManager.GetObjectsOn(Utilities.DirectionToVector(CharacterDirection) + transform.position);
-    //     if(objects.Count == 0) {
-    //         placeable = null;
-    //         return false;
-    //     }
-    //     foreach (var item in objects) {
-    //         if(!item.TryGetComponent<IPlaceable>(out IPlaceable place)) {
-    //             placeable = null;
-    //             return false;
-    //         }else if(place.IsPlaceable()){
-    //             temp = place;
-    //         }else {
-    //             placeable = null;
-    //             return false;
-    //         }
-    //     }
-    //     placeable = temp;
-    //     return true;
-    // }
-
-    // bool IsInteractable() { 
-    //     List<IInteractable> objects = LevelManager.GetInterfaceOn<IInteractable>(Utilities.DirectionToVector(CharacterDirection) + transform.position);
-    //     if(objects.Count == 0) return false;
-    //     foreach (var item in objects) {
-    //         if(item.IsInteractable(gameObject)) return true;
-    //     }
-    //     return false;       
-    // }
-
+    public void PlayWalkAudio() {
+        AudioManager.Instance.PlayPlayerMoveAudio();
+    }
 }
 
