@@ -54,7 +54,14 @@ public class UIManager : SingletonManager<UIManager> {
     private void Start() {
 
         if(levelText != null) {
-            levelText.text = "Level " + GameManager.Instance.GetCurrentLevelIndex().ToString();
+            int levelIndex = GameManager.Instance.GetCurrentLevelIndex();
+            if(levelIndex < 0) {
+                levelText.gameObject.SetActive(false);
+            }else {
+                levelText.gameObject.SetActive(true);
+                levelText.text = "Level " + (levelIndex + 1).ToString();
+            }
+            
         }
 
         if(leftLevelButton != null) {
