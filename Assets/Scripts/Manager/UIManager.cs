@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using TMPro;
 public class UIManager : SingletonManager<UIManager> {
     [SerializeField]
     private GameObject drownAnimObject;
@@ -18,6 +19,8 @@ public class UIManager : SingletonManager<UIManager> {
     private GameObject selectLevelLeftButton;
     [SerializeField]
     private GameObject selectLevelRightButton;
+    [SerializeField]
+    private TMP_Text levelText;
     [SerializeField]
     private Image fadeInOutImage;
     [SerializeField]
@@ -49,6 +52,11 @@ public class UIManager : SingletonManager<UIManager> {
         uiInputAction.Disable();
     }
     private void Start() {
+
+        if(levelText != null) {
+            levelText.text = "Level " + GameManager.Instance.GetCurrentLevelIndex().ToString();
+        }
+
         if(leftLevelButton != null) {
             if(GameManager.Instance.GetCurrentLevelIndex() == -1) {
                 leftLevelButton.SetActive(false);
