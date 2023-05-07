@@ -8,7 +8,7 @@ public enum GameEventTypeGameObject {
     
 }
 public enum GameEventTypeVoid {
-    
+    SHOW_TIMER
 }
 public enum GameEventTypeInt {
     FINISH_LEVEL

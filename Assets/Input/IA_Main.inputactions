@@ -11,7 +11,8 @@
                     "id": "0b9cba3c-2c0e-4401-ac6b-fa5ab4de8b27",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "MoveUp",
@@ -19,7 +20,8 @@
                     "id": "3193fb6c-8888-4c3e-8834-f58d229371b5",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "MoveLeft",
@@ -27,7 +29,8 @@
                     "id": "937f0406-4e10-4615-a91a-992a4813eba6",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "MoveDown",
@@ -35,7 +38,8 @@
                     "id": "98c659c4-d528-4ee3-9fbb-00a8bc2dbb52",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "MoveRight",
@@ -43,7 +47,8 @@
                     "id": "c2f0d01f-7182-45ed-8dfa-5fe9a6d5cb84",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Interact",
@@ -51,7 +56,8 @@
                     "id": "1cb814a2-8ffa-4839-94c8-4f926c2f8f29",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Restart",
@@ -59,7 +65,17 @@
                     "id": "eec47731-2469-4cfd-ae9e-0ca6a34a9782",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShowTimer",
+                    "type": "Button",
+                    "id": "d2666670-cdd4-452a-b0df-64b5cfc64405",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -260,6 +276,17 @@
                     "action": "Restart",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f04984ef-c7dd-47ed-85e1-b7b70121ae8b",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShowTimer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -273,7 +300,17 @@
                     "id": "0b4a4689-fbba-4cfd-9341-1e3c7cf93b5a",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ShowTimer",
+                    "type": "Button",
+                    "id": "85de2e1e-b697-4ca9-991b-3a6c1d95a2ea",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -285,6 +322,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Esc",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7fea3618-2d17-40ca-96e7-4a4d7ba22c4e",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShowTimer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 public class UIManager : SingletonManager<UIManager> {
     [SerializeField]
@@ -21,6 +22,12 @@ public class UIManager : SingletonManager<UIManager> {
     private GameObject selectLevelRightButton;
     [SerializeField]
     private TMP_Text levelText;
+
+    [SerializeField]
+    private TMP_Text timerText;
+    [SerializeField]
+    private GameObject timerPanel;
+
     [SerializeField]
     private Image fadeInOutImage;
     [SerializeField]
@@ -41,19 +48,19 @@ public class UIManager : SingletonManager<UIManager> {
     private int levelSelectPage;
 
     private IA_Main uiInputAction;
+    protected override void Init()
+    {
+        base.Init();
+        DontDestroyOnLoad(gameObject);
+    }
     private void OnEnable() {
-        uiInputAction = new IA_Main();
-        uiInputAction.Enable();
-        uiInputAction.UI.Esc.performed += OnEscButtonPerformed;
-    }
-    private void OnDisable() {
+        
+        // uiInputAction.UI.Esc.performed += OnEscButtonPerformed;
 
-        uiInputAction.UI.Esc.performed -= OnEscButtonPerformed;
-        uiInputAction.Disable();
-    }
-    private void Start() {
+        
 
-        if(levelText != null) {
+        SceneManager.sceneLoaded += (scene,loadSceneMode)=> {
+            if(levelText != null) {
             int levelIndex = GameManager.Instance.GetCurrentLevelIndex();
             if(levelIndex < 0) {
                 levelText.gameObject.SetActive(false);
@@ -106,6 +113,25 @@ public class UIManager : SingletonManager<UIManager> {
         levelButtonList.Add(levelImage_04.transform.GetChild(0).gameObject);
         levelButtonList.Add(levelImage_05.transform.GetChild(0).gameObject);
         levelButtonList.Add(levelImage_06.transform.GetChild(0).gameObject);
+
+        
+        };
+        uiInputAction = new IA_Main();
+        uiInputAction.Enable();
+        uiInputAction.UI.ShowTimer.performed += ShowTimer;
+       
+        //GameEventsManager.StartListening(GameEventTypeVoid.SHOW_TIMER,ShowTimer);
+    }
+    private void OnDisable() {
+
+        // uiInputAction.UI.Esc.performed -= OnEscButtonPerformed;
+        uiInputAction.UI.ShowTimer.performed -= ShowTimer;
+        uiInputAction.Disable();
+        //GameEventsManager.StopListening(GameEventTypeVoid.SHOW_TIMER,ShowTimer);
+    }
+    private void Start() {
+
+        
 
     }
     public void OnStartFirstLevelButtonClicked() {
@@ -170,6 +196,17 @@ public class UIManager : SingletonManager<UIManager> {
         if(fadeInOutImage.TryGetComponent<Image>(out Image image)) {
             Color color = image.color;
             image.color = new Color(color.r,color.g,color.b,value);
+        }
+    }
+
+    void ShowTimer(InputAction.CallbackContext ctx)
+    {
+        timerPanel.SetActive(!timerPanel.activeSelf);
+        timerText.text = "Timer" + System.Environment.NewLine;
+        foreach (var item in GameManager.Instance.SceneTimers)
+        {
+            //item.Value.Continue();
+            timerText.text += item.Key + ": " + item.Value.GetTime().ToString() + System.Environment.NewLine;
         }
     }
 }

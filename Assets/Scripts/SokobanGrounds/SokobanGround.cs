@@ -16,7 +16,7 @@ public class SokobanGround : MonoBehaviour {
             if(particle == null) {
                 particle = GetComponentInChildren<ParticleSystem>();
                 if(particle == null) {
-                    Debug.LogError("no particle here or it's disabled");
+                    Debug.LogWarning("no particle here or it's disabled");
                 }
             }
             return particle;
@@ -30,6 +30,7 @@ public class SokobanGround : MonoBehaviour {
     }
     private void OnEnable() {
         LevelManager.RegisterGround(this);
+        if(Particle == null) return;
         if(IsLevelGoal) {
             Particle.gameObject.SetActive(true);
         }else  {
@@ -49,5 +50,29 @@ public class SokobanGround : MonoBehaviour {
             IsReached = false;
             Particle.gameObject.SetActive(true);
         }
+    }
+
+    public void DisableGround()
+    {
+        //make this ground to invisible ground
+        
+        if(gameObject.TryGetComponent<IceGround>(out IceGround iceGround)) {
+            iceGround.enabled = false;
+            LevelManager.UnRegisterGround(iceGround);
+        }
+        if(gameObject.TryGetComponent<SandGround>(out SandGround sandGround)) {
+            sandGround.enabled = false;
+            LevelManager.UnRegisterGround(sandGround);
+        }
+        //如果这里有东西,要禁用
+        if(LevelManager.GetObjectOn(transform.position) != null) {
+            LevelManager.GetObjectOn(transform.position).gameObject.SetActive(false);
+        }
+        
+        if(gameObject.TryGetComponent<MeshRenderer>(out MeshRenderer renderer)) {
+            renderer.material = GameManager.Instance.InvisibleGroundMaterial;
+        }
+        gameObject.AddComponent<InvisibleGround>();
+        gameObject.SetActive(false);
     }
 }

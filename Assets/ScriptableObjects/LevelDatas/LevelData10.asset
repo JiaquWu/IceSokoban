@@ -16,3 +16,14 @@ MonoBehaviour:
   levelName: 
   levelThumbnail: {fileID: 0}
   levelIndicateImage: {fileID: 0}
+  adjustCubeContainers:
+  - deadline: 70
+    adjustCubes:
+    - {x: -2, y: 0, z: -2}
+    - {x: 2, y: 0, z: -2}
+    isOnlyObject: 0
+  - deadline: 105
+    adjustCubes:
+    - {x: -2, y: 0, z: 3}
+    - {x: -2, y: 0, z: 4}
+    isOnlyObject: 0

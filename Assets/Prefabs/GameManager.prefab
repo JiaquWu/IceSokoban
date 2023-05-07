@@ -45,3 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelSequence: {fileID: 0}
+  invisbileGroundMaterial: {fileID: 2100000, guid: fad4742df2e9aec488b48f8608963fb6,
+    type: 2}

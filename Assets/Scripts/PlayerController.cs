@@ -53,6 +53,8 @@ public class PlayerController : MonoBehaviour
         //mainInputAction.Gameplay.Interact.performed += OnInteractPerformed;
         mainInputAction.Gameplay.Undo.performed += OnUndoPerformed;
         mainInputAction.Gameplay.Restart.performed += OnRestartPerformed;
+
+        //mainInputAction.Gameplay.ShowTimer.performed += OnShowTimerPerformed;
         // LevelManager.OnPlayerDead += OnPlayerDead;
         // LevelManager.OnlevelFinish += OnLevelFinish;
         GameEventsManager.StartListening(GameEventTypeInt.FINISH_LEVEL,OnLevelFinish);
@@ -69,10 +71,12 @@ public class PlayerController : MonoBehaviour
         mainInputAction.Gameplay.Undo.performed -= OnUndoPerformed;
         mainInputAction.Gameplay.Restart.performed -= OnRestartPerformed;
 
+       // mainInputAction.Gameplay.ShowTimer.performed -= OnShowTimerPerformed;
+
         mainInputAction.Disable();
         // LevelManager.OnPlayerDead -= OnPlayerDead;
         // LevelManager.OnlevelFinish -= OnLevelFinish;
-        GameEventsManager.StopListening(GameEventTypeInt.FINISH_LEVEL,OnLevelFinish);
+        GameEventsManager.StartListening(GameEventTypeInt.FINISH_LEVEL,OnLevelFinish);
     }
     
     
@@ -302,5 +306,9 @@ public class PlayerController : MonoBehaviour
     public void PlayWalkAudio() {
         AudioManager.Instance.PlayPlayerMoveAudio();
     }
+
+    // void OnShowTimerPerformed(InputAction.CallbackContext context) {
+    //     GameEventsManager.TriggerEvent(GameEventTypeVoid.SHOW_TIMER);
+    // }
 }
 

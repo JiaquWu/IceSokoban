@@ -25,7 +25,7 @@ public class LevelManager : SingletonManager<LevelManager> {
         commandHandler = new CommandHandler();
     }
     public static void RegisterGround(SokobanGround ground) {
-        if(!Instance.currentGroundsDict.ContainsValue(ground)) {
+        if(!Instance.currentGroundsDict.ContainsKey(ground.transform.position.Vector3ToString())) {
             Instance.currentGroundsDict.Add(ground.transform.position.Vector3ToString(),ground);
         }
         if(ground is InvisibleGround) {
@@ -33,6 +33,15 @@ public class LevelManager : SingletonManager<LevelManager> {
         }
         if(ground.IsLevelGoal) {
             Instance.currentLevelGoals.Add(ground);
+        }
+    }
+
+    public static void UnRegisterGround(SokobanGround ground) {
+        if(Instance.currentGroundsDict.ContainsKey(ground.transform.position.Vector3ToString())) {
+            Instance.currentGroundsDict.Remove(ground.transform.position.Vector3ToString());
+        }
+        if(ground.IsLevelGoal && Instance.currentLevelGoals.Contains(ground)) {
+            Instance.currentLevelGoals.Remove(ground);
         }
     }
     public static void RegisterLevelObject(SokobanObject sokobanObject) {
@@ -78,7 +87,7 @@ public class LevelManager : SingletonManager<LevelManager> {
             return Instance.currentGroundsDict[pos.Vector3ToString()];
         }
         Debug.Log(pos.Vector3ToString());
-        Debug.LogWarning("no ground was found");
+        //Debug.LogWarning("no ground was found");
         return null;
     }
 

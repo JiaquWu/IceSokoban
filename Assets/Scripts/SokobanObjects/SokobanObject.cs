@@ -27,4 +27,12 @@ public class SokobanObject : MonoBehaviour {
     public virtual void OnEnable() {
         LevelManager.RegisterLevelObject(this);
     }
+
+    public virtual void OnDisable() {
+        LevelManager.UnRegisterLevelObject(this);
+    }
+
+    public void DisableObject() {
+        gameObject.SetActive(false);
+    }
 }

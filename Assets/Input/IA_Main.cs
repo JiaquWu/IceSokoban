@@ -89,6 +89,15 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Press"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowTimer"",
+                    ""type"": ""Button"",
+                    ""id"": ""d2666670-cdd4-452a-b0df-64b5cfc64405"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -289,6 +298,17 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                     ""action"": ""Restart"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f04984ef-c7dd-47ed-85e1-b7b70121ae8b"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShowTimer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -300,6 +320,15 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                     ""name"": ""Esc"",
                     ""type"": ""Button"",
                     ""id"": ""0b4a4689-fbba-4cfd-9341-1e3c7cf93b5a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowTimer"",
+                    ""type"": ""Button"",
+                    ""id"": ""85de2e1e-b697-4ca9-991b-3a6c1d95a2ea"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -317,6 +346,17 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                     ""action"": ""Esc"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7fea3618-2d17-40ca-96e7-4a4d7ba22c4e"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShowTimer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -332,9 +372,11 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
         m_Gameplay_MoveRight = m_Gameplay.FindAction("MoveRight", throwIfNotFound: true);
         m_Gameplay_Interact = m_Gameplay.FindAction("Interact", throwIfNotFound: true);
         m_Gameplay_Restart = m_Gameplay.FindAction("Restart", throwIfNotFound: true);
+        m_Gameplay_ShowTimer = m_Gameplay.FindAction("ShowTimer", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Esc = m_UI.FindAction("Esc", throwIfNotFound: true);
+        m_UI_ShowTimer = m_UI.FindAction("ShowTimer", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -401,6 +443,7 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_MoveRight;
     private readonly InputAction m_Gameplay_Interact;
     private readonly InputAction m_Gameplay_Restart;
+    private readonly InputAction m_Gameplay_ShowTimer;
     public struct GameplayActions
     {
         private @IA_Main m_Wrapper;
@@ -412,6 +455,7 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
         public InputAction @MoveRight => m_Wrapper.m_Gameplay_MoveRight;
         public InputAction @Interact => m_Wrapper.m_Gameplay_Interact;
         public InputAction @Restart => m_Wrapper.m_Gameplay_Restart;
+        public InputAction @ShowTimer => m_Wrapper.m_Gameplay_ShowTimer;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -442,6 +486,9 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                 @Restart.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
                 @Restart.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
                 @Restart.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnRestart;
+                @ShowTimer.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnShowTimer;
+                @ShowTimer.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnShowTimer;
+                @ShowTimer.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnShowTimer;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -467,6 +514,9 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                 @Restart.started += instance.OnRestart;
                 @Restart.performed += instance.OnRestart;
                 @Restart.canceled += instance.OnRestart;
+                @ShowTimer.started += instance.OnShowTimer;
+                @ShowTimer.performed += instance.OnShowTimer;
+                @ShowTimer.canceled += instance.OnShowTimer;
             }
         }
     }
@@ -476,11 +526,13 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private IUIActions m_UIActionsCallbackInterface;
     private readonly InputAction m_UI_Esc;
+    private readonly InputAction m_UI_ShowTimer;
     public struct UIActions
     {
         private @IA_Main m_Wrapper;
         public UIActions(@IA_Main wrapper) { m_Wrapper = wrapper; }
         public InputAction @Esc => m_Wrapper.m_UI_Esc;
+        public InputAction @ShowTimer => m_Wrapper.m_UI_ShowTimer;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -493,6 +545,9 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                 @Esc.started -= m_Wrapper.m_UIActionsCallbackInterface.OnEsc;
                 @Esc.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnEsc;
                 @Esc.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnEsc;
+                @ShowTimer.started -= m_Wrapper.m_UIActionsCallbackInterface.OnShowTimer;
+                @ShowTimer.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnShowTimer;
+                @ShowTimer.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnShowTimer;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -500,6 +555,9 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
                 @Esc.started += instance.OnEsc;
                 @Esc.performed += instance.OnEsc;
                 @Esc.canceled += instance.OnEsc;
+                @ShowTimer.started += instance.OnShowTimer;
+                @ShowTimer.performed += instance.OnShowTimer;
+                @ShowTimer.canceled += instance.OnShowTimer;
             }
         }
     }
@@ -513,9 +571,11 @@ public partial class @IA_Main : IInputActionCollection2, IDisposable
         void OnMoveRight(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnRestart(InputAction.CallbackContext context);
+        void OnShowTimer(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
         void OnEsc(InputAction.CallbackContext context);
+        void OnShowTimer(InputAction.CallbackContext context);
     }
 }
